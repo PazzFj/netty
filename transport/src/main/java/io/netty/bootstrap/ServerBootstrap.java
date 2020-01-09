@@ -38,8 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * {@link Bootstrap} sub-class which allows easy bootstrap of {@link ServerChannel}
- *
+ * {@link Bootstrap}子类，允许简单的引导{@link ServerChannel}
  */
 public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerChannel> {
 
@@ -48,10 +47,11 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
     private final Map<ChannelOption<?>, Object> childOptions = new ConcurrentHashMap<ChannelOption<?>, Object>();
     private final Map<AttributeKey<?>, Object> childAttrs = new ConcurrentHashMap<AttributeKey<?>, Object>();
     private final ServerBootstrapConfig config = new ServerBootstrapConfig(this);
-    private volatile EventLoopGroup childGroup;
-    private volatile ChannelHandler childHandler;
+    private volatile EventLoopGroup childGroup;     // 子组 NioEventLoopGroup
+    private volatile ChannelHandler childHandler;   // 子管道 ChannelInitializer
 
-    public ServerBootstrap() { }
+    public ServerBootstrap() {
+    }
 
     private ServerBootstrap(ServerBootstrap bootstrap) {
         super(bootstrap);
@@ -120,12 +120,13 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         return this;
     }
 
+    // channel -> NioServerSocketChannel
     @Override
     void init(Channel channel) {
         setChannelOptions(channel, options0().entrySet().toArray(EMPTY_OPTION_ARRAY), logger);
         setAttributes(channel, attrs0().entrySet().toArray(EMPTY_ATTRIBUTE_ARRAY));
 
-        ChannelPipeline p = channel.pipeline();
+        ChannelPipeline p = channel.pipeline(); // 管道
 
         final EventLoopGroup currentChildGroup = childGroup;
         final ChannelHandler currentChildHandler = childHandler;
