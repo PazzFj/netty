@@ -256,12 +256,12 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
      * Create a new {@link Channel} and bind it.
      */
     public ChannelFuture bind(SocketAddress localAddress) {
-        validate();
+        validate(); // bind
         return doBind(ObjectUtil.checkNotNull(localAddress, "localAddress"));
     }
 
     private ChannelFuture doBind(final SocketAddress localAddress) {
-        final ChannelFuture regFuture = initAndRegister();
+        final ChannelFuture regFuture = initAndRegister();  // do bind
         final Channel channel = regFuture.channel();
         if (regFuture.cause() != null) {
             return regFuture;

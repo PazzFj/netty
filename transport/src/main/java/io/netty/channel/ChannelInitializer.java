@@ -28,62 +28,25 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * A special {@link ChannelInboundHandler} which offers an easy way to initialize a {@link Channel} once it was
  * registered to its {@link EventLoop}.
- *
- * Implementations are most often used in the context of {@link Bootstrap#handler(ChannelHandler)} ,
- * {@link ServerBootstrap#handler(ChannelHandler)} and {@link ServerBootstrap#childHandler(ChannelHandler)} to
- * setup the {@link ChannelPipeline} of a {@link Channel}.
- *
- * <pre>
- *
- * public class MyChannelInitializer extends {@link ChannelInitializer} {
- *     public void initChannel({@link Channel} channel) {
- *         channel.pipeline().addLast("myHandler", new MyHandler());
- *     }
- * }
- *
- * {@link ServerBootstrap} bootstrap = ...;
- * ...
- * bootstrap.childHandler(new MyChannelInitializer());
- * ...
- * </pre>
- * Be aware that this class is marked as {@link Sharable} and so the implementation must be safe to be re-used.
- *
- * @param <C>   A sub-type of {@link Channel}
  */
 @Sharable
 public abstract class ChannelInitializer<C extends Channel> extends ChannelInboundHandlerAdapter {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(ChannelInitializer.class);
-    // We use a Set as a ChannelInitializer is usually shared between all Channels in a Bootstrap /
-    // ServerBootstrap. This way we can reduce the memory usage compared to use Attributes.
+
     private final Set<ChannelHandlerContext> initMap = Collections.newSetFromMap(
             new ConcurrentHashMap<ChannelHandlerContext, Boolean>());
 
-    /**
-     * This method will be called once the {@link Channel} was registered. After the method returns this instance
-     * will be removed from the {@link ChannelPipeline} of the {@link Channel}.
-     *
-     * @param ch            the {@link Channel} which was registered.
-     * @throws Exception    is thrown if an error occurs. In that case it will be handled by
-     *                      {@link #exceptionCaught(ChannelHandlerContext, Throwable)} which will by default close
-     *                      the {@link Channel}.
-     */
     protected abstract void initChannel(C ch) throws Exception;
 
     @Override
     @SuppressWarnings("unchecked")
     public final void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        // Normally this method will never be called as handlerAdded(...) should call initChannel(...) and remove
-        // the handler.
         if (initChannel(ctx)) {
-            // we called initChannel(...) so we need to call now pipeline.fireChannelRegistered() to ensure we not
-            // miss an event.
             ctx.pipeline().fireChannelRegistered();
 
-            // We are done with init the Channel, removing all the state for the Channel now.
             removeState(ctx);
         } else {
-            // Called initChannel(...) before which is the expected behavior, so just forward the event.
             ctx.fireChannelRegistered();
         }
     }
