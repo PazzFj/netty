@@ -43,15 +43,15 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Abstract base class for {@link Channel} implementations which use a Selector based approach.
+ * 使用基于选择器方法的{@link Channel}实现的抽象基类
  */
 public abstract class AbstractNioChannel extends AbstractChannel {
 
     private static final InternalLogger logger =
             InternalLoggerFactory.getInstance(AbstractNioChannel.class);
 
-    private final SelectableChannel ch;
-    protected final int readInterestOp;
+    private final SelectableChannel ch;         // ServerSocketChannel 服务通道
+    protected final int readInterestOp;         // 用于接收操作的操作集位  SelectionKey.OP_ACCEPT
     volatile SelectionKey selectionKey;
     boolean readPending;
     private final Runnable clearReadPendingRunnable = new Runnable() {
@@ -61,33 +61,25 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         }
     };
 
-    /**
-     * The future of the current connection attempt.  If not null, subsequent
-     * connection attempts will fail.
-     */
+    // 当前连接尝试的未来。如果不为空，则后续的连接尝试将失败
     private ChannelPromise connectPromise;
     private ScheduledFuture<?> connectTimeoutFuture;
     private SocketAddress requestedRemoteAddress;
 
     /**
      * Create a new instance
-     *
-     * @param parent            the parent {@link Channel} by which this instance was created. May be {@code null}
-     * @param ch                the underlying {@link SelectableChannel} on which it operates
-     * @param readInterestOp    the ops to set to receive data from the {@link SelectableChannel}
      */
     protected AbstractNioChannel(Channel parent, SelectableChannel ch, int readInterestOp) {
         super(parent);
         this.ch = ch;
         this.readInterestOp = readInterestOp;
         try {
-            ch.configureBlocking(false);
+            ch.configureBlocking(false);    // 创建非阻塞管道
         } catch (IOException e) {
             try {
                 ch.close();
             } catch (IOException e2) {
-                logger.warn(
-                            "Failed to close a partially initialized socket.", e2);
+                logger.warn("Failed to close a partially initialized socket.", e2);
             }
 
             throw new ChannelException("Failed to enter non-blocking mode.", e);
@@ -375,7 +367,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
     @Override
     protected void doRegister() throws Exception {
         boolean selected = false;
-        for (;;) {
+        for (; ; ) {
             try {
                 selectionKey = javaChannel().register(eventLoop().unwrappedSelector(), 0, this);
                 return;

@@ -38,7 +38,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
- * A skeletal {@link Channel} implementation.
+ * 一个框架{@link Channel}实现
  */
 public abstract class AbstractChannel extends DefaultAttributeMap implements Channel {
 
@@ -47,7 +47,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
     private final Channel parent;
     private final ChannelId id;
     private final Unsafe unsafe;
-    private final DefaultChannelPipeline pipeline;
+    private final DefaultChannelPipeline pipeline;  // 默认Channel通道
     private final VoidChannelPromise unsafeVoidPromise = new VoidChannelPromise(this, false);
     private final CloseFuture closeFuture = new CloseFuture(this);
 
@@ -58,29 +58,17 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
     private boolean closeInitiated;
     private Throwable initialCloseCause;
 
-    /** Cache for the string representation of this channel */
+    /** 此通道的字符串表示形式的缓存 */
     private boolean strValActive;
     private String strVal;
 
-    /**
-     * Creates a new instance.
-     *
-     * @param parent
-     *        the parent of this channel. {@code null} if there's no parent.
-     */
     protected AbstractChannel(Channel parent) {
         this.parent = parent;
         id = newId();
         unsafe = newUnsafe();
-        pipeline = newChannelPipeline();
+        pipeline = newChannelPipeline();    // 创建 ChannelPipeline
     }
 
-    /**
-     * Creates a new instance.
-     *
-     * @param parent
-     *        the parent of this channel. {@code null} if there's no parent.
-     */
     protected AbstractChannel(Channel parent, ChannelId id) {
         this.parent = parent;
         this.id = id;
@@ -93,16 +81,12 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
         return id;
     }
 
-    /**
-     * Returns a new {@link DefaultChannelId} instance. Subclasses may override this method to assign custom
-     * {@link ChannelId}s to {@link Channel}s that use the {@link AbstractChannel#AbstractChannel(Channel)} constructor.
-     */
     protected ChannelId newId() {
         return DefaultChannelId.newInstance();
     }
 
     /**
-     * Returns a new {@link DefaultChannelPipeline} instance.
+     * 创建默认的 ChannelPipeline
      */
     protected DefaultChannelPipeline newChannelPipeline() {
         return new DefaultChannelPipeline(this);
