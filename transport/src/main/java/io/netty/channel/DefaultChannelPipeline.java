@@ -64,7 +64,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     final AbstractChannelHandlerContext head;
     final AbstractChannelHandlerContext tail;
 
-    private final Channel channel;
+    private final Channel channel;      // AbstractChannel -> NioServerSocketChannel
     private final ChannelFuture succeededFuture;
     private final VoidChannelPromise voidPromise;
     private final boolean touch = ResourceLeakDetector.isEnabled();
@@ -205,7 +205,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         synchronized (this) {
             checkMultiplicity(handler);
 
-            newCtx = newContext(group, filterName(name, handler), handler);
+            newCtx = newContext(group, filterName(name, handler), handler); // DefaultChannelHandlerContext
 
             addLast0(newCtx);
 
@@ -369,6 +369,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         return addLast(null, handler);
     }
 
+    // ChannelInitializer
     @Override
     public final ChannelPipeline addLast(ChannelHandler... handlers) {
         return addLast(null, handlers);
@@ -382,7 +383,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             if (h == null) {
                 break;
             }
-            addLast(executor, null, h);
+            addLast(executor, null, h); // ChannelInitializer
         }
 
         return this;
