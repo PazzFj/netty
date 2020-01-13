@@ -56,6 +56,9 @@ import static io.netty.channel.ChannelHandlerMask.MASK_USER_EVENT_TRIGGERED;
 import static io.netty.channel.ChannelHandlerMask.MASK_WRITE;
 import static io.netty.channel.ChannelHandlerMask.mask;
 
+/**
+ * 双向链表
+ */
 abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, ResourceLeakHint {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractChannelHandlerContext.class);
@@ -88,8 +91,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     private final boolean ordered;
     private final int executionMask;
 
-    // Will be set to null if no child executor should be used, otherwise it will be set to the
-    // child executor.
+    // 如果不应该使用子执行程序，则将其设置为null，否则将设置为子执行程序
     final EventExecutor executor;
     private ChannelFuture succeededFuture;
 
@@ -97,7 +99,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     // There is no need to make this volatile as at worse it will just create a few more instances then needed.
     private Tasks invokeTasks;
 
-    private volatile int handlerState = INIT;
+    private volatile int handlerState = INIT;   // 0
 
     AbstractChannelHandlerContext(DefaultChannelPipeline pipeline, EventExecutor executor,
                                   String name, Class<? extends ChannelHandler> handlerClass) {
@@ -111,7 +113,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
 
     @Override
     public Channel channel() {
-        return pipeline.channel();
+        return pipeline.channel();  // NioServerSocketChannel
     }
 
     @Override
@@ -929,16 +931,18 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         handlerState = REMOVE_COMPLETE;
     }
 
+    /**
+     * 设置添加完成
+     */
     final boolean setAddComplete() {
         for (; ; ) {
-            int oldState = handlerState;
-            if (oldState == REMOVE_COMPLETE) {
+            int oldState = handlerState;    // 0
+            if (oldState == REMOVE_COMPLETE) {  // 3
                 return false;
             }
-            // Ensure we never update when the handlerState is REMOVE_COMPLETE already.
-            // oldState is usually ADD_PENDING but can also be REMOVE_COMPLETE when an EventExecutor is used that is not
-            // exposing ordering guarantees.
-            if (HANDLER_STATE_UPDATER.compareAndSet(this, oldState, ADD_COMPLETE)) {
+            // 确保当handlerState已经被REMOVE_COMPLETE时我们不会更新
+            // 通常是ADD_PENDING，但也可以是REMOVE_COMPLETE，当使用不公开顺序保证的EventExecutor时。g点担保
+            if (HANDLER_STATE_UPDATER.compareAndSet(this, oldState, ADD_COMPLETE)) {    // 2
                 return true;
             }
         }
@@ -950,10 +954,10 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     }
 
     final void callHandlerAdded() throws Exception {
-        // We must call setAddComplete before calling handlerAdded. Otherwise if the handlerAdded method generates
-        // any pipeline events ctx.handler() will miss them because the state will not allow it.
-        if (setAddComplete()) {
-            handler().handlerAdded(this);
+        // 在调用 handlerAdded 之前，我们必须调用 setAddComplete。否则，如果 handlerAdded 方法生成任何管道事件，ctx.handler()将错过这些事件，因为状态不允许它发生
+        if (setAddComplete()) { // 设置添加完成
+            // handler() 为自定义ChannelInitializer
+            handler().handlerAdded(this);   // ChannelInitializer.handlerAdded
         }
     }
 

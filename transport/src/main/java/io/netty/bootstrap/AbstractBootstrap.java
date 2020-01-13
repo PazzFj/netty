@@ -261,19 +261,19 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     }
 
     private ChannelFuture doBind(final SocketAddress localAddress) {
-        final ChannelFuture regFuture = initAndRegister();  // do bind
+        final ChannelFuture regFuture = initAndRegister();  // NioEventLoopGroup.register() 得到 ChannelFuture
         final Channel channel = regFuture.channel();
         if (regFuture.cause() != null) {
             return regFuture;
         }
 
-        if (regFuture.isDone()) {
+        if (regFuture.isDone()) {   // 如果此任务完成，则返回{@code true}
             // At this point we know that the registration was complete and successful.
             ChannelPromise promise = channel.newPromise();
             doBind0(regFuture, channel, localAddress, promise);
             return promise;
         } else {
-            // Registration future is almost always fulfilled already, but just in case it's not.
+            // 注册的未来几乎总是已经完成了，但是以防万一
             final PendingRegistrationPromise promise = new PendingRegistrationPromise(channel);
             regFuture.addListener(new ChannelFutureListener() {
                 @Override
@@ -296,6 +296,13 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         }
     }
 
+    /**
+     * 初始化 NioServerSocketChannel
+     * 1、通过 ReflectiveChannelFactory 通道工厂创建通道 Channel
+     * 2、初始化(通道) 。由子类去实现初始化过程
+     * <p>
+     * 3、通过NioEventLoopGroup 注册通道 Channel 得到 ChannelFuture 并返回
+     */
     final ChannelFuture initAndRegister() {
         Channel channel = null;
         try {
@@ -303,16 +310,17 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
             init(channel);
         } catch (Throwable t) {
             if (channel != null) {
-                // channel can be null if newChannel crashed (eg SocketException("too many open files"))
+
                 channel.unsafe().closeForcibly();
-                // as the Channel is not registered yet we need to force the usage of the GlobalEventExecutor
+
                 return new DefaultChannelPromise(channel, GlobalEventExecutor.INSTANCE).setFailure(t);
             }
-            // as the Channel is not registered yet we need to force the usage of the GlobalEventExecutor
+
             return new DefaultChannelPromise(new FailedChannel(), GlobalEventExecutor.INSTANCE).setFailure(t);
         }
 
-        ChannelFuture regFuture = config().group().register(channel);
+        // DefaultChannelPromise
+        ChannelFuture regFuture = config().group().register(channel);   // NioEventLoopGroup.register()
         if (regFuture.cause() != null) {
             if (channel.isRegistered()) {
                 channel.close();
@@ -320,15 +328,6 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
                 channel.unsafe().closeForcibly();
             }
         }
-
-        // If we are here and the promise is not failed, it's one of the following cases:
-        // 1) If we attempted registration from the event loop, the registration has been completed at this point.
-        //    i.e. It's safe to attempt bind() or connect() now because the channel has been registered.
-        // 2) If we attempted registration from the other thread, the registration request has been successfully
-        //    added to the event loop's task queue for later execution.
-        //    i.e. It's safe to attempt bind() or connect() now:
-        //         because bind() or connect() will be executed *after* the scheduled registration task is executed
-        //         because register(), bind(), and connect() are all bound to the same thread.
 
         return regFuture;
     }
@@ -449,6 +448,9 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         return buf.toString();
     }
 
+    /**
+     * 实现 ChannelFuture 接口
+     */
     static final class PendingRegistrationPromise extends DefaultChannelPromise {
 
         // Is set to the correct EventExecutor once the registration was successful. Otherwise it will

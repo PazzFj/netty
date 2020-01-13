@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * The result of an asynchronous operation.
+ * 异步操作的结果
  */
 @SuppressWarnings("ClassNameSameAsAncestorName")
 public interface Future<V> extends java.util.concurrent.Future<V> {
@@ -37,12 +37,7 @@ public interface Future<V> extends java.util.concurrent.Future<V> {
     boolean isCancellable();
 
     /**
-     * Returns the cause of the failed I/O operation if the I/O operation has
-     * failed.
-     *
-     * @return the cause of the failure.
-     *         {@code null} if succeeded or this future is not
-     *         completed yet.
+     * 返回一个通道，在该通道中，将执行与此future关联的I/O操作。如果I/O操作失败，则返回失败的I/O操作的原因
      */
     Throwable cause();
 
@@ -159,11 +154,6 @@ public interface Future<V> extends java.util.concurrent.Future<V> {
      */
     V getNow();
 
-    /**
-     * {@inheritDoc}
-     *
-     * If the cancellation was successful it will fail the future with a {@link CancellationException}.
-     */
     @Override
     boolean cancel(boolean mayInterruptIfRunning);
 }

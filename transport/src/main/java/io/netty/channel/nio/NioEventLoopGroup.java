@@ -32,38 +32,22 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 
 /**
- * {@link MultithreadEventLoopGroup} implementations which is used for NIO {@link Selector} based {@link Channel}s.
+ * {@link MultithreadEventLoopGroup}实现，用于基于{@link Channel}的NIO {@link Selector}
  */
 public class NioEventLoopGroup extends MultithreadEventLoopGroup {
 
-    /**
-     * Create a new instance using the default number of threads, the default {@link ThreadFactory} and
-     * the {@link SelectorProvider} which is returned by {@link SelectorProvider#provider()}.
-     */
     public NioEventLoopGroup() {
         this(0);
     }
 
-    /**
-     * Create a new instance using the specified number of threads, {@link ThreadFactory} and the
-     * {@link SelectorProvider} which is returned by {@link SelectorProvider#provider()}.
-     */
     public NioEventLoopGroup(int nThreads) {
         this(nThreads, (Executor) null);
     }
 
-    /**
-     * Create a new instance using the default number of threads, the given {@link ThreadFactory} and the
-     * {@link SelectorProvider} which is returned by {@link SelectorProvider#provider()}.
-     */
     public NioEventLoopGroup(ThreadFactory threadFactory) {
         this(0, threadFactory, SelectorProvider.provider());
     }
 
-    /**
-     * Create a new instance using the specified number of threads, the given {@link ThreadFactory} and the
-     * {@link SelectorProvider} which is returned by {@link SelectorProvider#provider()}.
-     */
     public NioEventLoopGroup(int nThreads, ThreadFactory threadFactory) {
         this(nThreads, threadFactory, SelectorProvider.provider());
     }
@@ -72,10 +56,6 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
         this(nThreads, executor, SelectorProvider.provider());
     }
 
-    /**
-     * Create a new instance using the specified number of threads, the given {@link ThreadFactory} and the given
-     * {@link SelectorProvider}.
-     */
     public NioEventLoopGroup(
             int nThreads, ThreadFactory threadFactory, final SelectorProvider selectorProvider) {
         this(nThreads, threadFactory, selectorProvider, DefaultSelectStrategyFactory.INSTANCE);

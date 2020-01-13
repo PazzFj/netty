@@ -20,12 +20,13 @@ import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
 
 /**
- * Special {@link ChannelFuture} which is writable.
+ * 特殊的{@link ChannelFuture}是可写的
+ * Promise 许诺
  */
 public interface ChannelPromise extends ChannelFuture, Promise<Void> {
 
     @Override
-    Channel channel();
+    Channel channel();  // NioServerSocketChannel
 
     @Override
     ChannelPromise setSuccess(Void result);

@@ -120,18 +120,17 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         return this;
     }
 
-    // channel -> NioServerSocketChannel
+    // 初始化管道 -> NioServerSocketChannel
     @Override
     void init(Channel channel) {
         setChannelOptions(channel, options0().entrySet().toArray(EMPTY_OPTION_ARRAY), logger);
         setAttributes(channel, attrs0().entrySet().toArray(EMPTY_ATTRIBUTE_ARRAY));
 
-        ChannelPipeline p = channel.pipeline(); // 管道 DefaultChannelPipeline
+        ChannelPipeline p = channel.pipeline();     // 管道 DefaultChannelPipeline
 
         final EventLoopGroup currentChildGroup = childGroup;
         final ChannelHandler currentChildHandler = childHandler;
-        final Entry<ChannelOption<?>, Object>[] currentChildOptions =
-                childOptions.entrySet().toArray(EMPTY_OPTION_ARRAY);
+        final Entry<ChannelOption<?>, Object>[] currentChildOptions = childOptions.entrySet().toArray(EMPTY_OPTION_ARRAY);
         final Entry<AttributeKey<?>, Object>[] currentChildAttrs = childAttrs.entrySet().toArray(EMPTY_ATTRIBUTE_ARRAY);
 
         p.addLast(new ChannelInitializer<Channel>() {

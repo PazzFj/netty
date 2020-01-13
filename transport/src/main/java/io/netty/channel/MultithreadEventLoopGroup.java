@@ -27,8 +27,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 
 /**
- * Abstract base class for {@link EventLoopGroup} implementations that handles their tasks with multiple threads at
- * the same time.
+ * {@link EventLoopGroup}实现的抽象基类，它可以同时处理多个线程的任务
  */
 public abstract class MultithreadEventLoopGroup extends MultithreadEventExecutorGroup implements EventLoopGroup {
 
@@ -45,24 +44,14 @@ public abstract class MultithreadEventLoopGroup extends MultithreadEventExecutor
         }
     }
 
-    /**
-     * @see MultithreadEventExecutorGroup#MultithreadEventExecutorGroup(int, Executor, Object...)
-     */
     protected MultithreadEventLoopGroup(int nThreads, Executor executor, Object... args) {
         super(nThreads == 0 ? DEFAULT_EVENT_LOOP_THREADS : nThreads, executor, args);
     }
 
-    /**
-     * @see MultithreadEventExecutorGroup#MultithreadEventExecutorGroup(int, ThreadFactory, Object...)
-     */
     protected MultithreadEventLoopGroup(int nThreads, ThreadFactory threadFactory, Object... args) {
         super(nThreads == 0 ? DEFAULT_EVENT_LOOP_THREADS : nThreads, threadFactory, args);
     }
 
-    /**
-     * @see MultithreadEventExecutorGroup#MultithreadEventExecutorGroup(int, Executor,
-     * EventExecutorChooserFactory, Object...)
-     */
     protected MultithreadEventLoopGroup(int nThreads, Executor executor, EventExecutorChooserFactory chooserFactory,
                                      Object... args) {
         super(nThreads == 0 ? DEFAULT_EVENT_LOOP_THREADS : nThreads, executor, chooserFactory, args);
@@ -81,6 +70,9 @@ public abstract class MultithreadEventLoopGroup extends MultithreadEventExecutor
     @Override
     protected abstract EventLoop newChild(Executor executor, Object... args) throws Exception;
 
+    /**
+     * 通过NioEventLoopGroup 注册 NioServerSocketChannel
+     */
     @Override
     public ChannelFuture register(Channel channel) {
         return next().register(channel);

@@ -40,8 +40,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 /**
- * The default {@link ChannelPipeline} implementation.  It is usually created
- * by a {@link Channel} implementation when the {@link Channel} is created.
+ * 默认的{@link ChannelPipeline}实现。它通常是由{@link Channel}实现在创建{@link Channel}时创建的
  */
 public class DefaultChannelPipeline implements ChannelPipeline {
 
@@ -84,8 +83,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     private PendingHandlerCallback pendingHandlerCallbackHead;
 
     /**
-     * Set to {@code true} once the {@link AbstractChannel} is registered.Once set to {@code true} the value will never
-     * change.
+     * 一旦注册了{@link AbstractChannel}，就将其设置为{@code true}。一旦设置为{@code true}，该值就不会改变
      */
     private boolean registered;
 
@@ -160,7 +158,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             checkMultiplicity(handler); // 检查 ChannelHandler -> ChannelInitializer
             name = filterName(name, handler); // name 为 handler 类名称
 
-            newCtx = newContext(group, name, handler);  // 创建 DefaultChannelHandlerContext
+            newCtx = newContext(group, name, handler);
 
             addFirst0(newCtx);
 
@@ -203,18 +201,19 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     public final ChannelPipeline addLast(EventExecutorGroup group, String name, ChannelHandler handler) {
         final AbstractChannelHandlerContext newCtx;
         synchronized (this) {
+            // 检测多样性
             checkMultiplicity(handler);
 
-            newCtx = newContext(group, filterName(name, handler), handler); // DefaultChannelHandlerContext
+            newCtx = newContext(group, filterName(name, handler), handler);     // 创建 DefaultChannelHandlerContext
 
-            addLast0(newCtx);
+            addLast0(newCtx);   // 添加到双向链表
 
             // If the registered is false it means that the channel was not registered on an eventLoop yet.
             // In this case we add the context to the pipeline and add a task that will call
             // ChannelHandler.handlerAdded(...) once the channel is registered.
             if (!registered) {
-                newCtx.setAddPending();
-                callHandlerCallbackLater(newCtx, true);
+                newCtx.setAddPending(); // 如果未注册, 设置其状态为等待中
+                callHandlerCallbackLater(newCtx, true); // 回调处理
                 return this;
             }
 
@@ -224,7 +223,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
                 return this;
             }
         }
-        callHandlerAdded0(newCtx);
+        callHandlerAdded0(newCtx);  // callback
         return this;
     }
 
@@ -612,7 +611,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
     private void callHandlerAdded0(final AbstractChannelHandlerContext ctx) {
         try {
-            ctx.callHandlerAdded();
+            ctx.callHandlerAdded(); //
         } catch (Throwable t) {
             boolean removed = false;
             try {
@@ -1140,7 +1139,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     }
 
     private void callHandlerAddedInEventLoop(final AbstractChannelHandlerContext newCtx, EventExecutor executor) {
-        newCtx.setAddPending();
+        newCtx.setAddPending(); //  设置其状态为等待中
         executor.execute(new Runnable() {
             @Override
             public void run() {
