@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public abstract class ChannelHandlerAdapter implements ChannelHandler {
 
-    // Not using volatile because it's used only for a sanity check.
+    // 不要使用volatile，因为它只用于完整性检查
     boolean added;
 
     /**
@@ -39,8 +39,7 @@ public abstract class ChannelHandlerAdapter implements ChannelHandler {
     }
 
     /**
-     * Return {@code true} if the implementation is {@link Sharable} and so can be added
-     * to different {@link ChannelPipeline}s.
+     * 如果实现是{@link Sharable}，则返回{@code true}，因此可以添加到不同的{@link ChannelPipeline}中。
      */
     public boolean isSharable() {
         /**

@@ -41,7 +41,7 @@ public class DefaultServerSocketChannelConfig extends DefaultChannelConfig
                                               implements ServerSocketChannelConfig {
 
     protected final ServerSocket javaSocket;
-    private volatile int backlog = NetUtil.SOMAXCONN;
+    private volatile int backlog = NetUtil.SOMAXCONN;   // 设置积压数
 
     /**
      * Creates a new instance.

@@ -24,12 +24,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 
 /**
- * A {@link ChannelOption} allows to configure a {@link ChannelConfig} in a type-safe
- * way. Which {@link ChannelOption} is supported depends on the actual implementation
- * of {@link ChannelConfig} and may depend on the nature of the transport it belongs
- * to.
- *
- * @param <T>   the type of the value which is valid for the {@link ChannelOption}
+ * {@link ChannelOption}允许以类型安全的方式配置{@link ChannelConfig}。支持哪个{@link ChannelOption}取决于{@link ChannelConfig}的实际实现，也可能取决于它所属的传输的性质
  */
 public class ChannelOption<T> extends AbstractConstant<ChannelOption<T>> {
 
@@ -40,35 +35,20 @@ public class ChannelOption<T> extends AbstractConstant<ChannelOption<T>> {
         }
     };
 
-    /**
-     * Returns the {@link ChannelOption} of the specified name.
-     */
     @SuppressWarnings("unchecked")
     public static <T> ChannelOption<T> valueOf(String name) {
         return (ChannelOption<T>) pool.valueOf(name);
     }
 
-    /**
-     * Shortcut of {@link #valueOf(String) valueOf(firstNameComponent.getName() + "#" + secondNameComponent)}.
-     */
     @SuppressWarnings("unchecked")
     public static <T> ChannelOption<T> valueOf(Class<?> firstNameComponent, String secondNameComponent) {
         return (ChannelOption<T>) pool.valueOf(firstNameComponent, secondNameComponent);
     }
 
-    /**
-     * Returns {@code true} if a {@link ChannelOption} exists for the given {@code name}.
-     */
     public static boolean exists(String name) {
         return pool.exists(name);
     }
 
-    /**
-     * Creates a new {@link ChannelOption} for the given {@code name} or fail with an
-     * {@link IllegalArgumentException} if a {@link ChannelOption} for the given {@code name} exists.
-     *
-     * @deprecated use {@link #valueOf(String)}.
-     */
     @Deprecated
     @SuppressWarnings("unchecked")
     public static <T> ChannelOption<T> newInstance(String name) {
@@ -80,21 +60,11 @@ public class ChannelOption<T> extends AbstractConstant<ChannelOption<T>> {
     public static final ChannelOption<MessageSizeEstimator> MESSAGE_SIZE_ESTIMATOR = valueOf("MESSAGE_SIZE_ESTIMATOR");
 
     public static final ChannelOption<Integer> CONNECT_TIMEOUT_MILLIS = valueOf("CONNECT_TIMEOUT_MILLIS");
-    /**
-     * @deprecated Use {@link MaxMessagesRecvByteBufAllocator}
-     * and {@link MaxMessagesRecvByteBufAllocator#maxMessagesPerRead(int)}.
-     */
     @Deprecated
     public static final ChannelOption<Integer> MAX_MESSAGES_PER_READ = valueOf("MAX_MESSAGES_PER_READ");
     public static final ChannelOption<Integer> WRITE_SPIN_COUNT = valueOf("WRITE_SPIN_COUNT");
-    /**
-     * @deprecated Use {@link #WRITE_BUFFER_WATER_MARK}
-     */
     @Deprecated
     public static final ChannelOption<Integer> WRITE_BUFFER_HIGH_WATER_MARK = valueOf("WRITE_BUFFER_HIGH_WATER_MARK");
-    /**
-     * @deprecated Use {@link #WRITE_BUFFER_WATER_MARK}
-     */
     @Deprecated
     public static final ChannelOption<Integer> WRITE_BUFFER_LOW_WATER_MARK = valueOf("WRITE_BUFFER_LOW_WATER_MARK");
     public static final ChannelOption<WriteBufferWaterMark> WRITE_BUFFER_WATER_MARK =
@@ -103,10 +73,6 @@ public class ChannelOption<T> extends AbstractConstant<ChannelOption<T>> {
     public static final ChannelOption<Boolean> ALLOW_HALF_CLOSURE = valueOf("ALLOW_HALF_CLOSURE");
     public static final ChannelOption<Boolean> AUTO_READ = valueOf("AUTO_READ");
 
-    /**
-     * If {@code true} then the {@link Channel} is closed automatically and immediately on write failure.
-     * The default value is {@code true}.
-     */
     public static final ChannelOption<Boolean> AUTO_CLOSE = valueOf("AUTO_CLOSE");
 
     public static final ChannelOption<Boolean> SO_BROADCAST = valueOf("SO_BROADCAST");
@@ -115,7 +81,7 @@ public class ChannelOption<T> extends AbstractConstant<ChannelOption<T>> {
     public static final ChannelOption<Integer> SO_RCVBUF = valueOf("SO_RCVBUF");
     public static final ChannelOption<Boolean> SO_REUSEADDR = valueOf("SO_REUSEADDR");
     public static final ChannelOption<Integer> SO_LINGER = valueOf("SO_LINGER");
-    public static final ChannelOption<Integer> SO_BACKLOG = valueOf("SO_BACKLOG");
+    public static final ChannelOption<Integer> SO_BACKLOG = valueOf("SO_BACKLOG");  // 积压
     public static final ChannelOption<Integer> SO_TIMEOUT = valueOf("SO_TIMEOUT");
 
     public static final ChannelOption<Integer> IP_TOS = valueOf("IP_TOS");
@@ -133,9 +99,6 @@ public class ChannelOption<T> extends AbstractConstant<ChannelOption<T>> {
     public static final ChannelOption<Boolean> SINGLE_EVENTEXECUTOR_PER_GROUP =
             valueOf("SINGLE_EVENTEXECUTOR_PER_GROUP");
 
-    /**
-     * Creates a new {@link ChannelOption} with the specified unique {@code name}.
-     */
     private ChannelOption(int id, String name) {
         super(id, name);
     }
@@ -145,10 +108,6 @@ public class ChannelOption<T> extends AbstractConstant<ChannelOption<T>> {
         this(pool.nextId(), name);
     }
 
-    /**
-     * Validate the value which is set for the {@link ChannelOption}. Sub-classes
-     * may override this for special checks.
-     */
     public void validate(T value) {
         ObjectUtil.checkNotNull(value, "value");
     }
