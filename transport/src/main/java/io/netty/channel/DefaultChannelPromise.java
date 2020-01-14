@@ -26,6 +26,7 @@ import static io.netty.util.internal.ObjectUtil.checkNotNull;
 /**
  * 默认的{@link ChannelPromise}实现。
  * 建议使用{@link Channel#newPromise()}来创建一个新的{@link ChannelPromise}，而不是显式地调用构造函数
+ * Promise 许诺
  */
 public class DefaultChannelPromise extends DefaultPromise<Void> implements ChannelPromise, FlushCheckpoint {
 
@@ -36,12 +37,6 @@ public class DefaultChannelPromise extends DefaultPromise<Void> implements Chann
         this.channel = checkNotNull(channel, "channel");
     }
 
-    /**
-     * Creates a new instance.
-     *
-     * @param channel
-     *        the {@link Channel} associated with this future
-     */
     public DefaultChannelPromise(Channel channel, EventExecutor executor) {
         super(executor);
         this.channel = checkNotNull(channel, "channel");

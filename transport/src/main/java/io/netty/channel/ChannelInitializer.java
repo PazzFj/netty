@@ -26,8 +26,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A special {@link ChannelInboundHandler} which offers an easy way to initialize a {@link Channel} once it was
- * registered to its {@link EventLoop}.
+ * 一个特殊的{@link ChannelInboundHandler}，它提供了一种简单的方法来初始化{@link Channel}，一旦它注册到{@link EventLoop}
  */
 @Sharable
 public abstract class ChannelInitializer<C extends Channel> extends ChannelInboundHandlerAdapter {
@@ -91,8 +90,6 @@ public abstract class ChannelInitializer<C extends Channel> extends ChannelInbou
             try {
                 initChannel((C) ctx.channel());     // 自定义实现 NioServerSocketChannel
             } catch (Throwable cause) {
-                // Explicitly call exceptionCaught(...) as we removed the handler before calling initChannel(...).
-                // We do so to prevent multiple calls to initChannel(...).
                 exceptionCaught(ctx, cause);
             } finally {
                 ChannelPipeline pipeline = ctx.pipeline();

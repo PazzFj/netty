@@ -43,11 +43,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * {@link AbstractBootstrap} is a helper class that makes it easy to bootstrap a {@link Channel}. It support
- * method-chaining to provide an easy way to configure the {@link AbstractBootstrap}.
- *
- * <p>When not used in a {@link ServerBootstrap} context, the {@link #bind()} methods are useful for connectionless
- * transports such as datagram (UDP).</p>
+ * {@link AbstractBootstrap}是一个帮助类，它使引导{@link Channel}变得很容易。它支持方法链接，提供了一种配置{@link AbstractBootstrap}的简单方法
  */
 public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C extends Channel> implements Cloneable {
     @SuppressWarnings("unchecked")
@@ -55,13 +51,13 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     @SuppressWarnings("unchecked")
     static final Map.Entry<AttributeKey<?>, Object>[] EMPTY_ATTRIBUTE_ARRAY = new Map.Entry[0];
 
-    volatile EventLoopGroup group;  // 正组 NioEventLoopGroup
+    volatile EventLoopGroup group;      // 事件循环组  NioEventLoopGroup
     @SuppressWarnings("deprecation")
     private volatile ChannelFactory<? extends C> channelFactory;    // ReflectiveChannelFactory(NioServerSocketChannel.class)
     private volatile SocketAddress localAddress;
     private final Map<ChannelOption<?>, Object> options = new ConcurrentHashMap<ChannelOption<?>, Object>();
     private final Map<AttributeKey<?>, Object> attrs = new ConcurrentHashMap<AttributeKey<?>, Object>();
-    private volatile ChannelHandler handler;
+    private volatile ChannelHandler handler;    // 管道处理器  ChannelInitializer
 
     AbstractBootstrap() {
         // Disallow extending from a different package.
@@ -119,13 +115,6 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         return self();
     }
 
-    /**
-     * {@link io.netty.channel.ChannelFactory} which is used to create {@link Channel} instances from
-     * when calling {@link #bind()}. This method is usually only used if {@link #channel(Class)}
-     * is not working for you because of some more complex needs. If your {@link Channel} implementation
-     * has a no-args constructor, its highly recommend to just use {@link #channel(Class)} to
-     * simplify your code.
-     */
     @SuppressWarnings({"unchecked", "deprecation"})
     public B channelFactory(io.netty.channel.ChannelFactory<? extends C> channelFactory) {
         return channelFactory((ChannelFactory<C>) channelFactory);
@@ -260,6 +249,7 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         return doBind(ObjectUtil.checkNotNull(localAddress, "localAddress"));
     }
 
+    /****************服务启动****************/
     private ChannelFuture doBind(final SocketAddress localAddress) {
         final ChannelFuture regFuture = initAndRegister();  // NioEventLoopGroup.register() 得到 ChannelFuture
         final Channel channel = regFuture.channel();
@@ -280,15 +270,13 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
                 public void operationComplete(ChannelFuture future) throws Exception {
                     Throwable cause = future.cause();
                     if (cause != null) {
-                        // Registration on the EventLoop failed so fail the ChannelPromise directly to not cause an
-                        // IllegalStateException once we try to access the EventLoop of the Channel.
+                        // EventLoop上的注册失败了，所以当我们试图访问通道的EventLoop时，不能让ChannelPromise直接导致IllegalStateException
                         promise.setFailure(cause);
                     } else {
-                        // Registration was successful, so set the correct executor to use.
-                        // See https://github.com/netty/netty/issues/2586
+                        // 注册成功，因此请设置要使用的正确执行程序
                         promise.registered();
 
-                        doBind0(regFuture, channel, localAddress, promise);
+                        doBind0(regFuture, channel, localAddress, promise);  // do
                     }
                 }
             });
@@ -306,16 +294,13 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     final ChannelFuture initAndRegister() {
         Channel channel = null;
         try {
-            channel = channelFactory.newChannel();
+            channel = channelFactory.newChannel();  // ReflectiveChannelFactory -> NioServerSocketChannel
             init(channel);
         } catch (Throwable t) {
             if (channel != null) {
-
                 channel.unsafe().closeForcibly();
-
                 return new DefaultChannelPromise(channel, GlobalEventExecutor.INSTANCE).setFailure(t);
             }
-
             return new DefaultChannelPromise(new FailedChannel(), GlobalEventExecutor.INSTANCE).setFailure(t);
         }
 
@@ -334,12 +319,10 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
 
     abstract void init(Channel channel) throws Exception;
 
-    private static void doBind0(
-            final ChannelFuture regFuture, final Channel channel,
+    private static void doBind0(final ChannelFuture regFuture, final Channel channel,
             final SocketAddress localAddress, final ChannelPromise promise) {
 
-        // This method is invoked before channelRegistered() is triggered.  Give user handlers a chance to set up
-        // the pipeline in its channelRegistered() implementation.
+        // 在触发channelRegistered()之前调用此方法。让用户处理程序有机会在其channelRegistered()实现中设置管道
         channel.eventLoop().execute(new Runnable() {
             @Override
             public void run() {

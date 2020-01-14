@@ -21,7 +21,7 @@ import io.netty.util.concurrent.Promise;
 
 /**
  * 特殊的{@link ChannelFuture}是可写的
- * Promise 许诺
+ * Promise 许诺, 承诺
  */
 public interface ChannelPromise extends ChannelFuture, Promise<Void> {
 
