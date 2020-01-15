@@ -20,7 +20,7 @@ import io.netty.util.internal.UnstableApi;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Default implementation which uses simple round-robin to choose next {@link EventExecutor}.
+ * 默认实现，使用简单的循环来选择下一个{@link EventExecutor}
  */
 @UnstableApi
 public final class DefaultEventExecutorChooserFactory implements EventExecutorChooserFactory {
