@@ -14,10 +14,13 @@ import java.lang.annotation.Target;
 public interface ChannelHandler {
 
     /**
-     * 将{@link ChannelHandler}添加到实际上下文并准备处理事件后调用
+     * 处理添加 ChannelHandlerContext
      */
     void handlerAdded(ChannelHandlerContext ctx) throws Exception;
 
+    /**
+     * 处理清除 ChannelHandlerContext
+     */
     void handlerRemoved(ChannelHandlerContext ctx) throws Exception;
 
     // Caught 捕捉

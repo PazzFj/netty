@@ -67,10 +67,9 @@ public abstract class ChannelInitializer<C extends Channel> extends ChannelInbou
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         if (ctx.channel().isRegistered()) {     // NioServerSocketChannel.isRegistered()
-            // This should always be true with our current DefaultChannelPipeline implementation.
-            // The good thing about calling initChannel(...) in handlerAdded(...) is that there will be no ordering
-            // surprises if a ChannelInitializer will add another ChannelInitializer. This is as all handlers
-            // will be added in the expected order.
+            // 对于当前的DefaultChannelPipeline实现，这应该总是正确的
+            // 在 handlerAdded(…)中调用initChannel(…)的好处是，如果一个ChannelInitializer将添加另一个ChannelInitializer，
+            // 则不会出现排序意外。这是因为所有的处理程序都将按照预期的顺序添加
             if (initChannel(ctx)) {
 
                 // We are done with init the Channel, removing the initializer now.

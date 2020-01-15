@@ -47,8 +47,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractNioChannel extends AbstractChannel {
 
-    private static final InternalLogger logger =
-            InternalLoggerFactory.getInstance(AbstractNioChannel.class);
+    private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractNioChannel.class);
 
     private final SelectableChannel ch;         // ServerSocketChannel 服务通道
     protected final int readInterestOp;         // 用于接收操作的操作集位  SelectionKey.OP_ACCEPT
@@ -66,11 +65,8 @@ public abstract class AbstractNioChannel extends AbstractChannel {
     private ScheduledFuture<?> connectTimeoutFuture;
     private SocketAddress requestedRemoteAddress;
 
-    /**
-     * Create a new instance
-     */
     protected AbstractNioChannel(Channel parent, SelectableChannel ch, int readInterestOp) {
-        super(parent);
+        super(parent);  // Initialize
         this.ch = ch;
         this.readInterestOp = readInterestOp;
         try {

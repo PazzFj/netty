@@ -53,12 +53,6 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
 
     private static ServerSocketChannel newSocket(SelectorProvider provider) {
         try {
-            /**
-             *  Use the {@link SelectorProvider} to open {@link SocketChannel} and so remove condition in
-             *  {@link SelectorProvider#provider()} which is called by each ServerSocketChannel.open() otherwise.
-             *
-             *  See <a href="https://github.com/netty/netty/issues/2308">#2308</a>.
-             */
             return provider.openServerSocketChannel();
         } catch (IOException e) {
             throw new ChannelException(
@@ -68,25 +62,16 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
 
     private final ServerSocketChannelConfig config;
 
-    /**
-     * Create a new instance
-     */
     public NioServerSocketChannel() {
-        this(newSocket(DEFAULT_SELECTOR_PROVIDER));
+        this(newSocket(DEFAULT_SELECTOR_PROVIDER));     // this
     }
 
-    /**
-     * Create a new instance using the given {@link SelectorProvider}.
-     */
     public NioServerSocketChannel(SelectorProvider provider) {
         this(newSocket(provider));
     }
 
-    /**
-     * Create a new instance using the given {@link ServerSocketChannel}.
-     */
     public NioServerSocketChannel(ServerSocketChannel channel) {
-        super(null, channel, SelectionKey.OP_ACCEPT);
+        super(null, channel, SelectionKey.OP_ACCEPT);   // Initializer
         config = new NioServerSocketChannelConfig(this, javaChannel().socket());
     }
 

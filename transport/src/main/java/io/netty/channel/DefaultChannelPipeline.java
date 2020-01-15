@@ -60,11 +60,12 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     private static final AtomicReferenceFieldUpdater<DefaultChannelPipeline, MessageSizeEstimator.Handle> ESTIMATOR =
             AtomicReferenceFieldUpdater.newUpdater(
                     DefaultChannelPipeline.class, MessageSizeEstimator.Handle.class, "estimatorHandle");
-    final AbstractChannelHandlerContext head;   //上端
-    final AbstractChannelHandlerContext tail;   //尾巴
 
-    private final Channel channel;      // AbstractChannel -> NioServerSocketChannel
-    private final ChannelFuture succeededFuture;
+    final AbstractChannelHandlerContext head;   //上端 HeadContext
+    final AbstractChannelHandlerContext tail;   //尾巴 TailContext
+
+    private final Channel channel;      // NioServerSocketChannel
+    private final ChannelFuture succeededFuture;    // SucceededChannelFuture
     private final VoidChannelPromise voidPromise;
     private final boolean touch = ResourceLeakDetector.isEnabled();
 
@@ -75,6 +76,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     /**
      * 这是一个由{@link # callhandldedforallhandlers()}处理的链表的头部，因此处理所有挂起的{@link # callhandl根除0(AbstractChannelHandlerContext)}
      */
+    // 封装着 DefaultChannelHandlerContext, 附带 next. (理解成单向链表)
     private PendingHandlerCallback pendingHandlerCallbackHead;
 
     /**
@@ -90,8 +92,8 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         tail = new TailContext(this);
         head = new HeadContext(this);
 
-        head.next = tail;
-        tail.prev = head;
+        head.next = tail;   // 头的下一个 为尾部
+        tail.prev = head;   // 尾的上一个 为头部
     }
 
     final MessageSizeEstimator.Handle estimatorHandle() {
@@ -203,11 +205,10 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
             addLast0(newCtx);   // 添加到双向链表
 
-            // If the registered is false it means that the channel was not registered on an eventLoop yet.
-            // In this case we add the context to the pipeline and add a task that will call
-            // ChannelHandler.handlerAdded(...) once the channel is registered.
+            // 如果注册为false，则意味着通道尚未在eventLoop上注册
+            // 在本例中，我们将上下文添加到管道中，并添加一个任务，该任务将在注册通道后调用 ChannelHandler.handlerAdded(…)
             if (!registered) {
-                newCtx.setAddPending(); // 如果未注册, 设置其状态为等待中
+                newCtx.setAddPending();     // 在ServerBootstrap#init(Channel)时未添加ChannelInitializer时表示未注册, 设置其状态为等待中
                 // 创建等待处理添加线程
                 callHandlerCallbackLater(newCtx, true); // 回调处理
                 return this;
@@ -223,12 +224,19 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         return this;
     }
 
+    /**
+     * 传递一个新的进来时：
+     *  1、拿到当前尾的 头部
+     *  2、拿到当前头的 尾部
+     *  3、把拿到当前的头和尾 赋值到新的 头和尾
+     *  4、把新的赋值到当前的头和尾
+     */
     private void addLast0(AbstractChannelHandlerContext newCtx) {
-        AbstractChannelHandlerContext prev = tail.prev;
-        newCtx.prev = prev;
-        newCtx.next = tail;
-        prev.next = newCtx;
-        tail.prev = newCtx;
+        AbstractChannelHandlerContext prev = tail.prev; // 头 head
+        newCtx.prev = prev;     //head赋值到新的头
+        newCtx.next = tail;     //tail赋值到新的尾
+        prev.next = newCtx;     //head的下一个为新的
+        tail.prev = newCtx;     //tail的上一个为新的
     }
 
     @Override
@@ -594,6 +602,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
     // Multiplicity 多样性
     private static void checkMultiplicity(ChannelHandler handler) {
+        // ChannelInitializer extends ChannelHandlerAdapter
         if (handler instanceof ChannelHandlerAdapter) {
             ChannelHandlerAdapter h = (ChannelHandlerAdapter) handler;
             if (!h.isSharable() && h.added) {
@@ -605,6 +614,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     }
 
+    /**
+     * 回调处理添加
+     */
     private void callHandlerAdded0(final AbstractChannelHandlerContext ctx) {
         try {
             ctx.callHandlerAdded(); //
@@ -714,6 +726,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         return context0(ObjectUtil.checkNotNull(name, "name"));
     }
 
+    /**
+     * 通过ChannelPipeline 处理 ChannelHandler 得到 AbstractChannelHandlerContext
+     */
     @Override
     public final ChannelHandlerContext context(ChannelHandler handler) {
         ObjectUtil.checkNotNull(handler, "handler");
@@ -1118,6 +1133,11 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     }
 
+    /**
+     * PendingHandlerCallback 的使用 封装 ChannelHandlerContext 上下文, 还提供next 的
+     * @param ctx 新的 DefaultChannelHandlerContext
+     * @param added true
+     */
     private void callHandlerCallbackLater(AbstractChannelHandlerContext ctx, boolean added) {
         assert !registered;
 
@@ -1126,7 +1146,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         if (pending == null) {
             pendingHandlerCallbackHead = task;
         } else {
-            // Find the tail of the linked-list.
+            // 找到链表的尾部
             while (pending.next != null) {
                 pending = pending.next;
             }
@@ -1135,7 +1155,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     }
 
     private void callHandlerAddedInEventLoop(final AbstractChannelHandlerContext newCtx, EventExecutor executor) {
-        newCtx.setAddPending(); //  设置其状态为等待中
+        newCtx.setAddPending(); //
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -1242,7 +1262,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     }
 
-    // A special catch-all handler that handles both bytes and messages.
+    // 一个特殊的全捕获处理程序，它同时处理字节和消息
     final class TailContext extends AbstractChannelHandlerContext implements ChannelInboundHandler {
 
         TailContext(DefaultChannelPipeline pipeline) {

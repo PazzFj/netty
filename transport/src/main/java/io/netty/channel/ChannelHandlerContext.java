@@ -35,27 +35,17 @@ public interface ChannelHandlerContext extends AttributeMap, ChannelInboundInvok
     Channel channel();
 
     /**
-     * Returns the {@link EventExecutor} which is used to execute an arbitrary task.
+     * 返回用于执行任意任务的{@link EventExecutor}
      */
     EventExecutor executor();
 
-    /**
-     * The unique name of the {@link ChannelHandlerContext}.The name was used when then {@link ChannelHandler}
-     * was added to the {@link ChannelPipeline}. This name can also be used to access the registered
-     * {@link ChannelHandler} from the {@link ChannelPipeline}.
-     */
     String name();
 
     /**
-     * The {@link ChannelHandler} that is bound this {@link ChannelHandlerContext}.
+     * 绑定这个{@link ChannelHandlerContext}的{@link ChannelHandler}
      */
     ChannelHandler handler();
 
-    /**
-     * Return {@code true} if the {@link ChannelHandler} which belongs to this context was removed
-     * from the {@link ChannelPipeline}. Note that this method is only meant to be called from with in the
-     * {@link EventLoop}.
-     */
     boolean isRemoved();
 
     @Override

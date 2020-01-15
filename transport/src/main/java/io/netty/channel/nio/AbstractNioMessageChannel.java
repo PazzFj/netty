@@ -30,14 +30,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@link AbstractNioChannel} base class for {@link Channel}s that operate on messages.
+ * 操作消息的{@link Channel}的{@link AbstractNioChannel}基类
  */
 public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
     boolean inputShutdown;
 
-    /**
-     * @see AbstractNioChannel#AbstractNioChannel(Channel, SelectableChannel, int)
-     */
     protected AbstractNioMessageChannel(Channel parent, SelectableChannel ch, int readInterestOp) {
         super(parent, ch, readInterestOp);  // Initialize
     }

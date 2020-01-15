@@ -62,28 +62,18 @@ import static io.netty.channel.ChannelHandlerMask.mask;
 abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, ResourceLeakHint {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractChannelHandlerContext.class);
-    volatile AbstractChannelHandlerContext next;
-    volatile AbstractChannelHandlerContext prev;
+    volatile AbstractChannelHandlerContext next;    // 下
+    volatile AbstractChannelHandlerContext prev;    // 上
 
     private static final AtomicIntegerFieldUpdater<AbstractChannelHandlerContext> HANDLER_STATE_UPDATER =
             AtomicIntegerFieldUpdater.newUpdater(AbstractChannelHandlerContext.class, "handlerState");
 
-    /**
-     * {@link ChannelHandler#handlerAdded(ChannelHandlerContext)} is about to be called.
-     */
     private static final int ADD_PENDING = 1;
-    /**
-     * {@link ChannelHandler#handlerAdded(ChannelHandlerContext)} was called.
-     */
+
     private static final int ADD_COMPLETE = 2;
-    /**
-     * {@link ChannelHandler#handlerRemoved(ChannelHandlerContext)} was called.
-     */
+
     private static final int REMOVE_COMPLETE = 3;
-    /**
-     * Neither {@link ChannelHandler#handlerAdded(ChannelHandlerContext)}
-     * nor {@link ChannelHandler#handlerRemoved(ChannelHandlerContext)} was called.
-     */
+
     private static final int INIT = 0;
 
     private final DefaultChannelPipeline pipeline;      //ChannelPipeline
@@ -99,7 +89,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     // There is no need to make this volatile as at worse it will just create a few more instances then needed.
     private Tasks invokeTasks;
 
-    private volatile int handlerState = INIT;   // 0
+    private volatile int handlerState = INIT;   // 处理状态
 
     AbstractChannelHandlerContext(DefaultChannelPipeline pipeline, EventExecutor executor,
                                   String name, Class<? extends ChannelHandler> handlerClass) {
@@ -936,7 +926,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
      */
     final boolean setAddComplete() {
         for (; ; ) {
-            int oldState = handlerState;    // 0
+            int oldState = handlerState;    // 1
             if (oldState == REMOVE_COMPLETE) {  // 3
                 return false;
             }
@@ -948,15 +938,16 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         }
     }
 
+    // 设置添加等待状态 0->1
     final void setAddPending() {
         boolean updated = HANDLER_STATE_UPDATER.compareAndSet(this, INIT, ADD_PENDING);
-        assert updated; // This should always be true as it MUST be called before setAddComplete() or setRemoved().
+        assert updated; // 这应该总是正确的，因为它必须在setAddComplete()或setRemoved()之前调用
     }
 
     final void callHandlerAdded() throws Exception {
         // 在调用 handlerAdded 之前，我们必须调用 setAddComplete。否则，如果 handlerAdded 方法生成任何管道事件，ctx.handler()将错过这些事件，因为状态不允许它发生
-        if (setAddComplete()) { // 设置添加完成
-            // handler() 为自定义ChannelInitializer
+        if (setAddComplete()) {     // 设置添加完成状态
+            // 自定义ChannelInitializer
             handler().handlerAdded(this);   // ChannelInitializer.handlerAdded
         }
     }

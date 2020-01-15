@@ -18,123 +18,58 @@ package io.netty.channel;
 import io.netty.channel.ChannelHandlerMask.Skip;
 
 /**
- * Abstract base class for {@link ChannelInboundHandler} implementations which provide
- * implementations of all of their methods.
- *
- * <p>
- * This implementation just forward the operation to the next {@link ChannelHandler} in the
- * {@link ChannelPipeline}. Sub-classes may override a method implementation to change this.
- * </p>
- * <p>
- * Be aware that messages are not released after the {@link #channelRead(ChannelHandlerContext, Object)}
- * method returns automatically. If you are looking for a {@link ChannelInboundHandler} implementation that
- * releases the received messages automatically, please see {@link SimpleChannelInboundHandler}.
- * </p>
+ * 提供所有方法实现的{@link ChannelInboundHandler}实现的抽象基类
  */
 public class ChannelInboundHandlerAdapter extends ChannelHandlerAdapter implements ChannelInboundHandler {
 
-    /**
-     * Calls {@link ChannelHandlerContext#fireChannelRegistered()} to forward
-     * to the next {@link ChannelInboundHandler} in the {@link ChannelPipeline}.
-     *
-     * Sub-classes may override this method to change behavior.
-     */
     @Skip
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         ctx.fireChannelRegistered();
     }
 
-    /**
-     * Calls {@link ChannelHandlerContext#fireChannelUnregistered()} to forward
-     * to the next {@link ChannelInboundHandler} in the {@link ChannelPipeline}.
-     *
-     * Sub-classes may override this method to change behavior.
-     */
     @Skip
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         ctx.fireChannelUnregistered();
     }
 
-    /**
-     * Calls {@link ChannelHandlerContext#fireChannelActive()} to forward
-     * to the next {@link ChannelInboundHandler} in the {@link ChannelPipeline}.
-     *
-     * Sub-classes may override this method to change behavior.
-     */
     @Skip
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         ctx.fireChannelActive();
     }
 
-    /**
-     * Calls {@link ChannelHandlerContext#fireChannelInactive()} to forward
-     * to the next {@link ChannelInboundHandler} in the {@link ChannelPipeline}.
-     *
-     * Sub-classes may override this method to change behavior.
-     */
     @Skip
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         ctx.fireChannelInactive();
     }
 
-    /**
-     * Calls {@link ChannelHandlerContext#fireChannelRead(Object)} to forward
-     * to the next {@link ChannelInboundHandler} in the {@link ChannelPipeline}.
-     *
-     * Sub-classes may override this method to change behavior.
-     */
     @Skip
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ctx.fireChannelRead(msg);
     }
 
-    /**
-     * Calls {@link ChannelHandlerContext#fireChannelReadComplete()} to forward
-     * to the next {@link ChannelInboundHandler} in the {@link ChannelPipeline}.
-     *
-     * Sub-classes may override this method to change behavior.
-     */
     @Skip
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         ctx.fireChannelReadComplete();
     }
 
-    /**
-     * Calls {@link ChannelHandlerContext#fireUserEventTriggered(Object)} to forward
-     * to the next {@link ChannelInboundHandler} in the {@link ChannelPipeline}.
-     *
-     * Sub-classes may override this method to change behavior.
-     */
     @Skip
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         ctx.fireUserEventTriggered(evt);
     }
 
-    /**
-     * Calls {@link ChannelHandlerContext#fireChannelWritabilityChanged()} to forward
-     * to the next {@link ChannelInboundHandler} in the {@link ChannelPipeline}.
-     *
-     * Sub-classes may override this method to change behavior.
-     */
     @Skip
     @Override
     public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
         ctx.fireChannelWritabilityChanged();
     }
 
-    /**
-     * Calls {@link ChannelHandlerContext#fireExceptionCaught(Throwable)} to forward
-     * to the next {@link ChannelHandler} in the {@link ChannelPipeline}.
-     *
-     * Sub-classes may override this method to change behavior.
-     */
     @Skip
     @Override
     @SuppressWarnings("deprecation")
