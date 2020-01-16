@@ -50,9 +50,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * {@link SingleThreadEventLoop} implementation which register the {@link Channel}'s to a
- * {@link Selector} and so does the multi-plexing of these in the event loop.
- *
+ * {@link SingleThreadEventLoop}实现，它将{@link Channel}注册到{@link Selector}中，并在事件循环中进行多路处理
  */
 public final class NioEventLoop extends SingleThreadEventLoop {
 
@@ -73,7 +71,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
         }
     };
 
-    // Workaround for JDK NIO bug.
+    // 解决JDK NIO bug的方法
     //
     // See:
     // - http://bugs.sun.com/view_bug.do?bug_id=6427854
@@ -115,7 +113,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
     private Selector unwrappedSelector;
     private SelectedSelectionKeySet selectedKeys;
 
-    private final SelectorProvider provider;
+    private final SelectorProvider provider;    // 选择器提供者
 
     private static final long AWAKE = -1L;
     private static final long NONE = Long.MAX_VALUE;

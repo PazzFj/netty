@@ -295,7 +295,7 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         Channel channel = null;
         try {
             channel = channelFactory.newChannel();  // ReflectiveChannelFactory -> NioServerSocketChannel
-            init(channel);
+            init(channel);  //  抽象方法,  ServerBootstrap 添加使用 DefaultChannelPipeline.addLast(ChannelInitializer){initChannel()}
         } catch (Throwable t) {
             if (channel != null) {
                 channel.unsafe().closeForcibly();
@@ -305,7 +305,7 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         }
 
         // DefaultChannelPromise
-        ChannelFuture regFuture = config().group().register(channel);   // NioEventLoopGroup.register()
+        ChannelFuture regFuture = config().group().register(channel);   // 利用线程池注册管道, ServerBootstrap -> NioEventLoopGroup
         if (regFuture.cause() != null) {
             if (channel.isRegistered()) {
                 channel.close();
@@ -317,7 +317,14 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         return regFuture;
     }
 
+
+    /**
+     * 抽象方法， 子类实现初始化管道
+     */
     abstract void init(Channel channel) throws Exception;
+
+
+
 
     private static void doBind0(final ChannelFuture regFuture, final Channel channel,
             final SocketAddress localAddress, final ChannelPromise promise) {

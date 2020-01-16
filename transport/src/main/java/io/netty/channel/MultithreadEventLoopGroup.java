@@ -33,7 +33,7 @@ public abstract class MultithreadEventLoopGroup extends MultithreadEventExecutor
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(MultithreadEventLoopGroup.class);
 
-    private static final int DEFAULT_EVENT_LOOP_THREADS;
+    private static final int DEFAULT_EVENT_LOOP_THREADS;    // 返回Java虚拟机可用的处理器数量 4 * 2
 
     static {
         DEFAULT_EVENT_LOOP_THREADS = Math.max(1, SystemPropertyUtil.getInt(
@@ -44,6 +44,11 @@ public abstract class MultithreadEventLoopGroup extends MultithreadEventExecutor
         }
     }
 
+    /**
+     * 初始化此构造器
+     * @param nThreads 0
+     * @param executor null
+     */
     protected MultithreadEventLoopGroup(int nThreads, Executor executor, Object... args) {
         super(nThreads == 0 ? DEFAULT_EVENT_LOOP_THREADS : nThreads, executor, args);
     }
@@ -80,7 +85,7 @@ public abstract class MultithreadEventLoopGroup extends MultithreadEventExecutor
 
     @Override
     public ChannelFuture register(ChannelPromise promise) {
-        return next().register(promise);
+        return next().register(promise);    // next(Atom)
     }
 
     @Deprecated

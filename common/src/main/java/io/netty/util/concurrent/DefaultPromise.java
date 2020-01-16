@@ -176,7 +176,7 @@ public class DefaultPromise<V> extends AbstractFuture<V> implements Promise<V> {
         checkNotNull(listener, "listener");
 
         synchronized (this) {
-            addListener0(listener);
+            addListener0(listener); // add
         }
 
         if (isDone()) {

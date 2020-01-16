@@ -37,11 +37,11 @@ import java.util.concurrent.ThreadFactory;
 public class NioEventLoopGroup extends MultithreadEventLoopGroup {
 
     public NioEventLoopGroup() {
-        this(0);
+        this(0);//
     }
 
     public NioEventLoopGroup(int nThreads) {
-        this(nThreads, (Executor) null);
+        this(nThreads, (Executor) null);//
     }
 
     public NioEventLoopGroup(ThreadFactory threadFactory) {
@@ -53,7 +53,7 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
     }
 
     public NioEventLoopGroup(int nThreads, Executor executor) {
-        this(nThreads, executor, SelectorProvider.provider());
+        this(nThreads, executor, SelectorProvider.provider());//
     }
 
     public NioEventLoopGroup(
@@ -68,15 +68,15 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
 
     public NioEventLoopGroup(
             int nThreads, Executor executor, final SelectorProvider selectorProvider) {
-        this(nThreads, executor, selectorProvider, DefaultSelectStrategyFactory.INSTANCE);
+        this(nThreads, executor, selectorProvider, DefaultSelectStrategyFactory.INSTANCE);//
     }
 
     /**
      * 初始化使用此构造器
      * @param nThreads 0
-     * @param executor
-     * @param selectorProvider
-     * @param selectStrategyFactory
+     * @param executor null
+     * @param selectorProvider SelectorProvider.provider()
+     * @param selectStrategyFactory DefaultSelectStrategyFactory.INSTANCE
      */
     public NioEventLoopGroup(int nThreads, Executor executor, final SelectorProvider selectorProvider,
                              final SelectStrategyFactory selectStrategyFactory) {

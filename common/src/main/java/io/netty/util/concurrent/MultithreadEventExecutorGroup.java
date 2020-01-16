@@ -30,21 +30,32 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class MultithreadEventExecutorGroup extends AbstractEventExecutorGroup {
 
     private final EventExecutor[] children;
-    private final Set<EventExecutor> readonlyChildren;
+    private final Set<EventExecutor> readonlyChildren;  // 已经读取的线程数
     private final AtomicInteger terminatedChildren = new AtomicInteger();
     private final Promise<?> terminationFuture = new DefaultPromise(GlobalEventExecutor.INSTANCE);
 
-    // PowerOfTwoEventExecutorChooser or GenericEventExecutorChooser
-    private final EventExecutorChooserFactory.EventExecutorChooser chooser;
+    // Java虚拟机可用的处理器数量*2 是2的次幂则实例化 PowerOfTwoEventExecutorChooser 对象, 否则 GenericEventExecutorChooser
+    private final EventExecutorChooserFactory.EventExecutorChooser chooser; // chooser 选择器
 
     protected MultithreadEventExecutorGroup(int nThreads, ThreadFactory threadFactory, Object... args) {
         this(nThreads, threadFactory == null ? null : new ThreadPerTaskExecutor(threadFactory), args);
     }
 
+    /**
+     * @param nThreads 8
+     * @param executor null
+     * @param args selectorProvider, DefaultSelectStrategyFactory.INSTANCE, RejectedExecutionHandlers.reject()
+     */
     protected MultithreadEventExecutorGroup(int nThreads, Executor executor, Object... args) {
         this(nThreads, executor, DefaultEventExecutorChooserFactory.INSTANCE, args);
     }
 
+    /**
+     * @param nThreads 返回Java虚拟机可用的处理器数量 4 * 2
+     * @param executor null
+     * @param chooserFactory DefaultEventExecutorChooserFactory.INSTANCE
+     * @param args selectorProvider, DefaultSelectStrategyFactory.INSTANCE, RejectedExecutionHandlers.reject()
+     */
     protected MultithreadEventExecutorGroup(int nThreads, Executor executor,
                                             EventExecutorChooserFactory chooserFactory, Object... args) {
         if (nThreads <= 0) {
@@ -60,7 +71,7 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
         for (int i = 0; i < nThreads; i ++) {
             boolean success = false;
             try {
-                children[i] = newChild(executor, args);
+                children[i] = newChild(executor, args); // create
                 success = true;
             } catch (Exception e) {
                 // TODO: Think about if this is a good exception type
@@ -87,6 +98,7 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
             }
         }
 
+        // PowerOfTwoEventExecutorChooser
         chooser = chooserFactory.newChooser(children);
 
         final FutureListener<Object> terminationListener = new FutureListener<Object>() {
