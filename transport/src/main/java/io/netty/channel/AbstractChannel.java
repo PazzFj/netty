@@ -53,7 +53,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
     private volatile SocketAddress localAddress;
     private volatile SocketAddress remoteAddress;
-    private volatile EventLoop eventLoop;   //NioEventLoop
+    private volatile EventLoop eventLoop;   //当前管道所在的 NioEventLoop 线程
     private volatile boolean registered;    //注册标识
     private boolean closeInitiated;
     private Throwable initialCloseCause;
@@ -396,14 +396,14 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
     }
 
     /**
-     * {@link Unsafe} implementation which sub-classes must extend and use.
+     * *********************Unsafe 实现类***********************
      */
     protected abstract class AbstractUnsafe implements Unsafe {
 
         private volatile ChannelOutboundBuffer outboundBuffer = new ChannelOutboundBuffer(AbstractChannel.this);
         private RecvByteBufAllocator.Handle recvHandle;
         private boolean inFlush0;
-        /** true if the channel has never been registered, false otherwise */
+        /** 如果管道从未注册，则为真，否则为假 */
         private boolean neverRegistered = true;
 
         private void assertEventLoop() {
@@ -441,8 +441,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                 return;
             }
             if (!isCompatible(eventLoop)) {
-                promise.setFailure(
-                        new IllegalStateException("incompatible event loop type: " + eventLoop.getClass().getName()));
+                promise.setFailure(new IllegalStateException("incompatible event loop type: " + eventLoop.getClass().getName()));
                 return;
             }
 
@@ -459,8 +458,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                         }
                     });
                 } catch (Throwable t) {
-                    logger.warn(
-                            "Force-closing a channel whose registration task was not accepted by an event loop: {}",
+                    logger.warn("Force-closing a channel whose registration task was not accepted by an event loop: {}",
                             AbstractChannel.this, t);
                     closeForcibly();
                     closeFuture.setClosed();
@@ -471,13 +469,14 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
         private void register0(ChannelPromise promise) {
             try {
-                // check if the channel is still open as it could be closed in the mean time when the register
-                // call was outside of the eventLoop
+                // 请检查通道是否仍然打开，因为当寄存器调用在 eventLoopFuture 之外时，通道可能会关闭，从而无法取消
                 if (!promise.setUncancellable() || !ensureOpen(promise)) {
                     return;
                 }
                 boolean firstRegistration = neverRegistered;
-                doRegister();
+                // 设置ServerSocketChannel 注册选择器
+                doRegister();   // AbstractNioChannel#doRegister(): 使用ServerSocketChannel 注册到 Selector 得到 SelectionKey
+                // 设置标识为已注册
                 neverRegistered = false;
                 registered = true;
 
@@ -1032,9 +1031,10 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
             return null;
         }
     }
+    /******************************************************************************************************/
 
     /**
-     * Return {@code true} if the given {@link EventLoop} is compatible with this instance.
+     * 如果给定的{@link EventLoop}与此实例兼容，则返回{@code true}
      */
     protected abstract boolean isCompatible(EventLoop loop);
 

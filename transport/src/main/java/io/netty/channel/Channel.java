@@ -15,15 +15,9 @@
  */
 package io.netty.channel;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import io.netty.channel.socket.DatagramChannel;
-import io.netty.channel.socket.DatagramPacket;
-import io.netty.channel.socket.ServerSocketChannel;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.util.AttributeMap;
 
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 
@@ -86,7 +80,11 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
         SocketAddress localAddress();
 
         SocketAddress remoteAddress();
-
+        /**
+         * 注册管道, 通过线程池注册
+         * @param eventLoop 线程池
+         * @param promise 回调对象 ChannelFuture
+         */
         void register(EventLoop eventLoop, ChannelPromise promise);
 
         void bind(SocketAddress localAddress, ChannelPromise promise);

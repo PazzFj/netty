@@ -71,7 +71,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
     private Map<EventExecutorGroup, EventExecutor> childExecutors;
     private volatile MessageSizeEstimator.Handle estimatorHandle;
-    private boolean firstRegistration = true;
+    private boolean firstRegistration = true;   // 最开始注册
 
     /**
      * 这是一个由{@link # callhandldedforallhandlers()}处理的链表的头部，因此处理所有挂起的{@link # callhandl根除0(AbstractChannelHandlerContext)}
@@ -82,7 +82,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     /**
      * 一旦注册了{@link AbstractChannel}，就将其设置为{@code true}。一旦设置为{@code true}，该值就不会改变
      */
-    private boolean registered;
+    private boolean registered;     // 默认为false, 如果已处理则设置为true
 
     protected DefaultChannelPipeline(Channel channel) {
         this.channel = ObjectUtil.checkNotNull(channel, "channel");
@@ -654,6 +654,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     }
 
+    /**
+     * 执行处理添加如果需要
+     */
     final void invokeHandlerAddedIfNeeded() {
         assert channel.eventLoop().inEventLoop();
         if (firstRegistration) {
@@ -1110,6 +1113,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     }
 
+    /**
+     * 回调处理添加来自所有处理的
+     */
     private void callHandlerAddedForAllHandlers() {
         final PendingHandlerCallback pendingHandlerCallbackHead;
         synchronized (this) {

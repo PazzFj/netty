@@ -51,7 +51,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
 
     private final SelectableChannel ch;         // ServerSocketChannel 服务通道
     protected final int readInterestOp;         // 用于接收操作的操作集位  SelectionKey.OP_ACCEPT
-    volatile SelectionKey selectionKey;
+    volatile SelectionKey selectionKey;         // ServerSocketChannel 注册到 Selector 时的 SelectionKey 返回
     boolean readPending;
     private final Runnable clearReadPendingRunnable = new Runnable() {
         @Override
@@ -197,6 +197,9 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         void forceFlush();
     }
 
+    /**
+     * *********************Unsafe 实现类***********************
+     */
     protected abstract class AbstractNioUnsafe extends AbstractUnsafe implements NioUnsafe {
 
         protected final void removeReadOp() {
@@ -354,6 +357,9 @@ public abstract class AbstractNioChannel extends AbstractChannel {
             return selectionKey.isValid() && (selectionKey.interestOps() & SelectionKey.OP_WRITE) != 0;
         }
     }
+
+    /***********************************************************/
+
 
     @Override
     protected boolean isCompatible(EventLoop loop) {

@@ -301,7 +301,7 @@ public class NioEventLoopTest extends AbstractEventLoopTest {
         }).get(1, TimeUnit.SECONDS);
     }
 
-    @Test
+    /*@Test
     public void testCustomQueue()  {
         final AtomicBoolean called = new AtomicBoolean();
         NioEventLoopGroup group = new NioEventLoopGroup(1,
@@ -329,6 +329,6 @@ public class NioEventLoopTest extends AbstractEventLoopTest {
         } finally {
             group.shutdownGracefully();
         }
-    }
+    }*/
 
 }

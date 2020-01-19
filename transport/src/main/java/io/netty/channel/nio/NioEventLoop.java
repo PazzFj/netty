@@ -130,6 +130,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
     private int cancelledKeys;
     private boolean needsToSelectAgain;
 
+    // NioEventLoop 构造器
     NioEventLoop(NioEventLoopGroup parent, Executor executor, SelectorProvider selectorProvider,
                  SelectStrategy strategy, RejectedExecutionHandler rejectedExecutionHandler,
                  EventLoopTaskQueueFactory queueFactory) {
@@ -150,8 +151,9 @@ public final class NioEventLoop extends SingleThreadEventLoop {
         return queueFactory.newTaskQueue(DEFAULT_MAX_PENDING_TASKS);
     }
 
+    // 选择器消息
     private static final class SelectorTuple {
-        final Selector unwrappedSelector;
+        final Selector unwrappedSelector;   // unwrapped 非包装
         final Selector selector;
 
         SelectorTuple(Selector unwrappedSelector) {
@@ -168,7 +170,8 @@ public final class NioEventLoop extends SingleThreadEventLoop {
     private SelectorTuple openSelector() {
         final Selector unwrappedSelector;
         try {
-            unwrappedSelector = provider.openSelector();
+            // 打开 Selector 选择器
+            unwrappedSelector = provider.openSelector(); // do
         } catch (IOException e) {
             throw new ChannelException("failed to open a new selector", e);
         }
