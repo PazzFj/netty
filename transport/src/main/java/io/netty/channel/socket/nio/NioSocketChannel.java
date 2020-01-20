@@ -61,9 +61,8 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
     private static SocketChannel newSocket(SelectorProvider provider) {
         try {
             /**
-             *  Use the {@link SelectorProvider} to open {@link SocketChannel} and so remove condition in
-             *  {@link SelectorProvider#provider()} which is called by each SocketChannel.open() otherwise.
-             *
+             *  使用{@link SelectorProvider}打开{@link SocketChannel}，从而删除{@link SelectorProvider#provider()}中的条件，
+             *  否则每个SocketChannel.open()将调用该条件
              *  See <a href="https://github.com/netty/netty/issues/2308">#2308</a>.
              */
             return provider.openSocketChannel();

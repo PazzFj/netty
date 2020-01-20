@@ -52,6 +52,7 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
         super.doBeginRead();
     }
 
+    /****************************/
     private final class NioMessageUnsafe extends AbstractNioUnsafe {
 
         private final List<Object> readBuf = new ArrayList<Object>();
@@ -118,6 +119,7 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
             }
         }
     }
+    /*****************************/
 
     @Override
     protected void doWrite(ChannelOutboundBuffer in) throws Exception {
@@ -185,7 +187,7 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
     }
 
     /**
-     * Read messages into the given array and return the amount which was read.
+     * 将消息读入给定的数组并返回所读取的数量
      */
     protected abstract int doReadMessages(List<Object> buf) throws Exception;
 

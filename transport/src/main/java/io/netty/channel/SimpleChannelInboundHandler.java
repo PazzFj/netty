@@ -109,7 +109,7 @@ public abstract class SimpleChannelInboundHandler<I> extends ChannelInboundHandl
     }
 
     /**
-     * Is called for each message of type {@link I}.
+     * 为类型{@link I}的每个消息调用为类型{@link I}的每个消息调用
      *
      * @param ctx           the {@link ChannelHandlerContext} which this {@link SimpleChannelInboundHandler}
      *                      belongs to

@@ -47,7 +47,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
     private final Channel parent;
     private final ChannelId id;
     private final Unsafe unsafe;    // NioMessageUnsafe
-    private final DefaultChannelPipeline pipeline;  // 默认Channel通道
+    private final DefaultChannelPipeline pipeline;  // 默认Channel传递途径
     private final VoidChannelPromise unsafeVoidPromise = new VoidChannelPromise(this, false);
     private final CloseFuture closeFuture = new CloseFuture(this);
 
