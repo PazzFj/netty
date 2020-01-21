@@ -49,8 +49,10 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
 
     ChannelMetadata metadata();
 
+    // 加载服务地址
     SocketAddress localAddress();
 
+    // 清除服务地址
     SocketAddress remoteAddress();
 
     ChannelFuture closeFuture();
