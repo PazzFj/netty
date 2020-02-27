@@ -64,9 +64,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     final AbstractChannelHandlerContext head;   //上端 HeadContext
     final AbstractChannelHandlerContext tail;   //尾巴 TailContext
 
-    private final Channel channel;      // NioServerSocketChannel
+    private final Channel channel;                  // NioServerSocketChannel
     private final ChannelFuture succeededFuture;    // SucceededChannelFuture
-    private final VoidChannelPromise voidPromise;
+    private final VoidChannelPromise voidPromise;   // VoidChannelPromise
     private final boolean touch = ResourceLeakDetector.isEnabled();
 
     private Map<EventExecutorGroup, EventExecutor> childExecutors;
@@ -76,7 +76,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     /**
      * 这是一个由{@link # callhandldedforallhandlers()}处理的链表的头部，因此处理所有挂起的{@link # callhandl根除0(AbstractChannelHandlerContext)}
      */
-    // 封装着 DefaultChannelHandlerContext, 附带 next. (理解为 线程单向链表)
+    // 封装 DefaultChannelHandlerContext, 附带 next. (理解为 线程单向链表)
     private PendingHandlerCallback pendingHandlerCallbackHead;
 
     /**

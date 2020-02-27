@@ -35,27 +35,24 @@ public interface ChannelHandlerContext extends AttributeMap, ChannelInboundInvok
     Channel channel();  // 核心管道
 
     /**
-     * 返回用于执行任意任务的{@link EventExecutor}
+     * 当前封装的 NioEventLoop
      */
     EventExecutor executor();
 
     String name();
 
-    /**
-     * 绑定这个{@link ChannelHandlerContext}的{@link ChannelHandler}
-     */
-    ChannelHandler handler();
+    ChannelHandler handler();   // 当前封装的 ChannelHandler
 
     boolean isRemoved();
 
     @Override
-    ChannelHandlerContext fireChannelRegistered();  // Channel注册事件
+    ChannelHandlerContext fireChannelRegistered();      // Channel注册事件
 
     @Override
     ChannelHandlerContext fireChannelUnregistered();
 
     @Override
-    ChannelHandlerContext fireChannelActive();  // Tcp链路建立成功，Channel激活事件
+    ChannelHandlerContext fireChannelActive();          // Tcp链路建立成功，Channel激活事件
 
     @Override
     ChannelHandlerContext fireChannelInactive();
@@ -81,26 +78,14 @@ public interface ChannelHandlerContext extends AttributeMap, ChannelInboundInvok
     @Override
     ChannelHandlerContext flush();
 
-    /**
-     * Return the assigned {@link ChannelPipeline}
-     */
     ChannelPipeline pipeline();
 
-    /**
-     * Return the assigned {@link ByteBufAllocator} which will be used to allocate {@link ByteBuf}s.
-     */
     ByteBufAllocator alloc();
 
-    /**
-     * @deprecated Use {@link Channel#attr(AttributeKey)}
-     */
     @Deprecated
     @Override
     <T> Attribute<T> attr(AttributeKey<T> key);
 
-    /**
-     * @deprecated Use {@link Channel#hasAttr(AttributeKey)}
-     */
     @Deprecated
     @Override
     <T> boolean hasAttr(AttributeKey<T> key);
