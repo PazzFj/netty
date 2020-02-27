@@ -76,7 +76,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     /**
      * 这是一个由{@link # callhandldedforallhandlers()}处理的链表的头部，因此处理所有挂起的{@link # callhandl根除0(AbstractChannelHandlerContext)}
      */
-    // 封装着 DefaultChannelHandlerContext, 附带 next. (理解成单向链表)
+    // 封装着 DefaultChannelHandlerContext, 附带 next. (理解为 线程单向链表)
     private PendingHandlerCallback pendingHandlerCallbackHead;
 
     /**
@@ -155,6 +155,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             checkMultiplicity(handler); // 检查 ChannelHandler -> ChannelInitializer
             name = filterName(name, handler); // name 为 handler 类名称
 
+            // DefaultChannelHandlerContext
             newCtx = newContext(group, name, handler);
 
             addFirst0(newCtx);
@@ -619,7 +620,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
      */
     private void callHandlerAdded0(final AbstractChannelHandlerContext ctx) {
         try {
-            ctx.callHandlerAdded(); //
+            ctx.callHandlerAdded(); //回调处理添加
         } catch (Throwable t) {
             boolean removed = false;
             try {

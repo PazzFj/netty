@@ -15,8 +15,6 @@
  */
 package io.netty.channel;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
@@ -26,7 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 一个特殊的{@link ChannelInboundHandler}，它提供了一种简单的方法来初始化{@link Channel}，一旦它注册到{@link EventLoop}
+ * ChannelHandler 管道初始器, 也是一个管道处理器 ChannelHandler 的实现
  */
 @Sharable
 public abstract class ChannelInitializer<C extends Channel> extends ChannelInboundHandlerAdapter {
@@ -51,7 +49,7 @@ public abstract class ChannelInitializer<C extends Channel> extends ChannelInbou
     }
 
     /**
-     * Handle the {@link Throwable} by logging and closing the {@link Channel}. Sub-classes may override this.
+     * 通过记录和关闭{@link通道} 来处理{@link Throwable}。子类可以覆盖它。
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
@@ -62,7 +60,7 @@ public abstract class ChannelInitializer<C extends Channel> extends ChannelInbou
     }
 
     /**
-     * {@inheritDoc} If override this method ensure you call super!
+     * {@inheritDoc} 如果覆盖此方法，请确保您调用super!
      */
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
@@ -87,7 +85,7 @@ public abstract class ChannelInitializer<C extends Channel> extends ChannelInbou
     private boolean initChannel(ChannelHandlerContext ctx) throws Exception {
         if (initMap.add(ctx)) { // Guard against re-entrance.
             try {
-                initChannel((C) ctx.channel());     // 自定义实现 NioServerSocketChannel
+                initChannel((C) ctx.channel()); // 上下文获取Channel -> NioServerSocketChannel
             } catch (Throwable cause) {
                 exceptionCaught(ctx, cause);
             } finally {

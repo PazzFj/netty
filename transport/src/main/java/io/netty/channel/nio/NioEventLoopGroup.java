@@ -36,10 +36,12 @@ import java.util.concurrent.ThreadFactory;
  */
 public class NioEventLoopGroup extends MultithreadEventLoopGroup {
 
+    // 默认构造器
     public NioEventLoopGroup() {
         this(0);//
     }
 
+    // 构造器
     public NioEventLoopGroup(int nThreads) {
         this(nThreads, (Executor) null);//
     }
@@ -52,6 +54,7 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
         this(nThreads, threadFactory, SelectorProvider.provider());
     }
 
+    // 构造器
     public NioEventLoopGroup(int nThreads, Executor executor) {
         this(nThreads, executor, SelectorProvider.provider());//
     }
@@ -129,7 +132,7 @@ public class NioEventLoopGroup extends MultithreadEventLoopGroup {
     @Override
     protected EventLoop newChild(Executor executor, Object... args) throws Exception {
         EventLoopTaskQueueFactory queueFactory = args.length == 4 ? (EventLoopTaskQueueFactory) args[3] : null;
-        return new NioEventLoop(this, executor, (SelectorProvider) args[0],
+        return new NioEventLoop(this, executor, (SelectorProvider) args[0], //create
             ((SelectStrategyFactory) args[1]).newSelectStrategy(), (RejectedExecutionHandler) args[2], queueFactory);
     }
 }

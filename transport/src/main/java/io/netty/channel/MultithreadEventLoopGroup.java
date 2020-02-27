@@ -33,7 +33,7 @@ public abstract class MultithreadEventLoopGroup extends MultithreadEventExecutor
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(MultithreadEventLoopGroup.class);
 
-    private static final int DEFAULT_EVENT_LOOP_THREADS;    // 返回Java虚拟机可用的处理器数量 4 * 2
+    private static final int DEFAULT_EVENT_LOOP_THREADS;    // 返回Java虚拟机可用的处理器数量 my 4 * 2
 
     static {
         DEFAULT_EVENT_LOOP_THREADS = Math.max(1, SystemPropertyUtil.getInt(

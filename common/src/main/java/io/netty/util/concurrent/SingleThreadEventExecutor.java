@@ -76,15 +76,15 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
 
     private final Queue<Runnable> taskQueue;
 
-    private volatile Thread thread;
+    private volatile Thread thread; // 线程 null
     @SuppressWarnings("unused")
     private volatile ThreadProperties threadProperties;
-    private final Executor executor;
+    private final Executor executor;    // ThreadPerTaskExecutor
     private volatile boolean interrupted;
 
     private final CountDownLatch threadLock = new CountDownLatch(1);
     private final Set<Runnable> shutdownHooks = new LinkedHashSet<Runnable>();
-    private final boolean addTaskWakesUp;
+    private final boolean addTaskWakesUp; // false
     private final int maxPendingTasks;
     private final RejectedExecutionHandler rejectedExecutionHandler;
 
@@ -125,6 +125,9 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         rejectedExecutionHandler = ObjectUtil.checkNotNull(rejectedHandler, "rejectedHandler");
     }
 
+    /**
+     * 父级构造器
+     */
     protected SingleThreadEventExecutor(EventExecutorGroup parent, Executor executor,
                                         boolean addTaskWakesUp, Queue<Runnable> taskQueue,
                                         RejectedExecutionHandler rejectedHandler) {

@@ -110,7 +110,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
      * The NIO {@link Selector}.
      */
     private Selector selector;
-    private Selector unwrappedSelector;
+    private Selector unwrappedSelector; // 未包装选择器
     private SelectedSelectionKeySet selectedKeys;
 
     private final SelectorProvider provider;    // 选择器提供者
@@ -124,7 +124,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
     //    other value T    when EL is waiting with wakeup scheduled at time T
     private final AtomicLong nextWakeupNanos = new AtomicLong(AWAKE);
 
-    private final SelectStrategy selectStrategy;
+    private final SelectStrategy selectStrategy; // DefaultSelectStrategy
 
     private volatile int ioRatio = 50;
     private int cancelledKeys;
@@ -137,7 +137,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
         super(parent, executor, false, newTaskQueue(queueFactory), newTaskQueue(queueFactory),
                 rejectedExecutionHandler);
         this.provider = ObjectUtil.checkNotNull(selectorProvider, "selectorProvider");
-        this.selectStrategy = ObjectUtil.checkNotNull(strategy, "selectStrategy");
+        this.selectStrategy = ObjectUtil.checkNotNull(strategy, "selectStrategy");  // DefaultSelectStrategy
         final SelectorTuple selectorTuple = openSelector();
         this.selector = selectorTuple.selector;
         this.unwrappedSelector = selectorTuple.unwrappedSelector;
@@ -151,7 +151,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
         return queueFactory.newTaskQueue(DEFAULT_MAX_PENDING_TASKS);
     }
 
-    // 选择器消息
+    // 选择器元组
     private static final class SelectorTuple {
         final Selector unwrappedSelector;   // unwrapped 非包装
         final Selector selector;

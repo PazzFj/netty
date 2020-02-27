@@ -140,8 +140,8 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
                 ch.eventLoop().execute(new Runnable() {
                     @Override
                     public void run() {
-                        pipeline.addLast(new ServerBootstrapAcceptor(
-                                ch, currentChildGroup, currentChildHandler, currentChildOptions, currentChildAttrs));
+                        pipeline.addLast(new ServerBootstrapAcceptor(ch, currentChildGroup, currentChildHandler,
+                                currentChildOptions, currentChildAttrs));
                     }
                 });
             }
@@ -161,6 +161,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         return this;
     }
 
+    // 服务引导程序接收器, 是一个管道输入处理器
     private static class ServerBootstrapAcceptor extends ChannelInboundHandlerAdapter {
 
         private final EventLoopGroup childGroup;

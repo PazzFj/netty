@@ -101,9 +101,6 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         ));
     }
 
-    /**
-     * @deprecated Use {@link #channelFactory(io.netty.channel.ChannelFactory)} instead.
-     */
     @Deprecated
     public B channelFactory(ChannelFactory<? extends C> channelFactory) {
         ObjectUtil.checkNotNull(channelFactory, "channelFactory");
@@ -227,23 +224,14 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         return bind(new InetSocketAddress(inetPort));
     }
 
-    /**
-     * Create a new {@link Channel} and bind it.
-     */
     public ChannelFuture bind(String inetHost, int inetPort) {
         return bind(SocketUtils.socketAddress(inetHost, inetPort));
     }
 
-    /**
-     * Create a new {@link Channel} and bind it.
-     */
     public ChannelFuture bind(InetAddress inetHost, int inetPort) {
         return bind(new InetSocketAddress(inetHost, inetPort));
     }
 
-    /**
-     * Create a new {@link Channel} and bind it.
-     */
     public ChannelFuture bind(SocketAddress localAddress) {
         validate(); // bind
         return doBind(ObjectUtil.checkNotNull(localAddress, "localAddress"));
@@ -258,9 +246,8 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         }
 
         if (regFuture.isDone()) {   // 如果此任务完成，则返回{@code true}
-            // At this point we know that the registration was complete and successful.
             ChannelPromise promise = channel.newPromise();
-            doBind0(regFuture, channel, localAddress, promise);
+            doBind0(regFuture, channel, localAddress, promise); //
             return promise;
         } else {
             // 注册的未来几乎总是已经完成了，但是以防万一
@@ -324,8 +311,9 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     abstract void init(Channel channel) throws Exception;
 
 
-
-
+    /**
+     * 最后实现方法， 通过线程池执行线程
+     */
     private static void doBind0(final ChannelFuture regFuture, final Channel channel,
             final SocketAddress localAddress, final ChannelPromise promise) {
 

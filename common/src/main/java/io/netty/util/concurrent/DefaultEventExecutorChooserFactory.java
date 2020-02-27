@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 默认实现，使用简单的循环来选择下一个{@link EventExecutor}
+ * 事件执行选择器工厂
  */
 @UnstableApi
 public final class DefaultEventExecutorChooserFactory implements EventExecutorChooserFactory {

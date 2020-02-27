@@ -16,7 +16,10 @@
 package io.netty.channel;
 
 /**
- * {@link ChannelHandler}，为状态变化添加回调。这允许用户很容易地挂入状态更改
+ * (入站): 处理输入数据和Channel状态类型改变。
+ *
+ * @see ChannelInboundHandlerAdapter
+ * @see SimpleChannelInboundHandler
  */
 public interface ChannelInboundHandler extends ChannelHandler {
 

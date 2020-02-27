@@ -31,7 +31,7 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
 
     private final EventExecutor[] children;       // = new EventExecutor[Java虚拟机可用的处理器数量 * 2];
     private final Set<EventExecutor> readonlyChildren;  // 已经读取的线程数
-    private final AtomicInteger terminatedChildren = new AtomicInteger();
+    private final AtomicInteger terminatedChildren = new AtomicInteger();   // 判断
     private final Promise<?> terminationFuture = new DefaultPromise(GlobalEventExecutor.INSTANCE);
 
     // Java虚拟机可用的处理器数量*2 是2的次幂则实例化 PowerOfTwoEventExecutorChooser 对象, 否则 GenericEventExecutorChooser
@@ -63,6 +63,7 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
         }
 
         if (executor == null) {
+            // DefaultThreadFactory
             executor = new ThreadPerTaskExecutor(newDefaultThreadFactory());
         }
 
@@ -71,7 +72,7 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
         for (int i = 0; i < nThreads; i++) {
             boolean success = false;
             try {
-                children[i] = newChild(executor, args); // create
+                children[i] = newChild(executor, args); // create NioEventLoop
                 success = true;
             } catch (Exception e) {
                 // TODO: Think about if this is a good exception type
@@ -101,6 +102,7 @@ public abstract class MultithreadEventExecutorGroup extends AbstractEventExecuto
         // PowerOfTwoEventExecutorChooser
         chooser = chooserFactory.newChooser(children);
 
+        // 终止监听器
         final FutureListener<Object> terminationListener = new FutureListener<Object>() {
             @Override
             public void operationComplete(Future<Object> future) throws Exception {

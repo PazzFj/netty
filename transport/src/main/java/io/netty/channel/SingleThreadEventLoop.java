@@ -58,6 +58,7 @@ public abstract class SingleThreadEventLoop extends SingleThreadEventExecutor im
         tailTasks = newTaskQueue(maxPendingTasks);
     }
 
+    //
     protected SingleThreadEventLoop(EventLoopGroup parent, Executor executor,
                                     boolean addTaskWakesUp, Queue<Runnable> taskQueue, Queue<Runnable> tailTaskQueue,
                                     RejectedExecutionHandler rejectedExecutionHandler) {
@@ -86,7 +87,7 @@ public abstract class SingleThreadEventLoop extends SingleThreadEventExecutor im
     @Override
     public ChannelFuture register(final ChannelPromise promise) {
         ObjectUtil.checkNotNull(promise, "promise");
-        promise.channel().unsafe().register(this, promise); // do
+        promise.channel().unsafe().register(this, promise); // create DefaultChannelPromise
         return promise;
     }
 

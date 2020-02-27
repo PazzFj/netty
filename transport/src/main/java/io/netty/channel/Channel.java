@@ -75,6 +75,9 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
     @Override
     Channel flush();
 
+    /**
+     * 管道内部接口定义, 用于注册EventLoop、绑定、连接、关闭， SocketAddress，还有发送消息、刷新消息
+     */
     interface Unsafe {
 
         RecvByteBufAllocator.Handle recvBufAllocHandle();

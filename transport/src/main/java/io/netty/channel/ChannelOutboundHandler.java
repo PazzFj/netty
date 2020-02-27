@@ -18,16 +18,14 @@ package io.netty.channel;
 import java.net.SocketAddress;
 
 /**
- * {@link ChannelHandler} which will get notified for IO-outbound-operations.
+ * (出站): 处理输出数据
+ *
+ * @see ChannelOutboundHandlerAdapter
  */
 public interface ChannelOutboundHandler extends ChannelHandler {
+
     /**
-     * Called once a bind operation is made.
-     *
-     * @param ctx           the {@link ChannelHandlerContext} for which the bind operation is made
-     * @param localAddress  the {@link SocketAddress} to which it should bound
-     * @param promise       the {@link ChannelPromise} to notify once the operation completes
-     * @throws Exception    thrown if an error occurs
+     * 绑定操作完成后调用
      */
     void bind(ChannelHandlerContext ctx, SocketAddress localAddress, ChannelPromise promise) throws Exception;
 

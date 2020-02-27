@@ -15,14 +15,13 @@
  */
 package io.netty.channel;
 
+/**
+ * 管道 流入 调用
+ */
 public interface ChannelInboundInvoker {
 
     /**
-     * A {@link Channel} was registered to its {@link EventLoop}.
-     *
-     * This will result in having the  {@link ChannelInboundHandler#channelRegistered(ChannelHandlerContext)} method
-     * called of the next  {@link ChannelInboundHandler} contained in the  {@link ChannelPipeline} of the
-     * {@link Channel}.
+     * Channel注册事件
      */
     ChannelInboundInvoker fireChannelRegistered();
 
@@ -36,59 +35,37 @@ public interface ChannelInboundInvoker {
     ChannelInboundInvoker fireChannelUnregistered();
 
     /**
-     * A {@link Channel} is active now, which means it is connected.
-     *
-     * This will result in having the  {@link ChannelInboundHandler#channelActive(ChannelHandlerContext)} method
-     * called of the next  {@link ChannelInboundHandler} contained in the  {@link ChannelPipeline} of the
-     * {@link Channel}.
+     * Tcp链路建立成功，Channel激活事件
      */
     ChannelInboundInvoker fireChannelActive();
 
     /**
-     * A {@link Channel} is inactive now, which means it is closed.
-     *
-     * This will result in having the  {@link ChannelInboundHandler#channelInactive(ChannelHandlerContext)} method
-     * called of the next  {@link ChannelInboundHandler} contained in the  {@link ChannelPipeline} of the
-     * {@link Channel}.
+     * Tcp连接关闭，链路不可用通知事件
      */
     ChannelInboundInvoker fireChannelInactive();
 
     /**
-     * A {@link Channel} received an {@link Throwable} in one of its inbound operations.
-     *
-     * This will result in having the  {@link ChannelInboundHandler#exceptionCaught(ChannelHandlerContext, Throwable)}
-     * method  called of the next  {@link ChannelInboundHandler} contained in the  {@link ChannelPipeline} of the
-     * {@link Channel}.
+     * 异常通知事件
      */
     ChannelInboundInvoker fireExceptionCaught(Throwable cause);
 
     /**
-     * A {@link Channel} received an user defined event.
-     *
-     * This will result in having the  {@link ChannelInboundHandler#userEventTriggered(ChannelHandlerContext, Object)}
-     * method  called of the next  {@link ChannelInboundHandler} contained in the  {@link ChannelPipeline} of the
-     * {@link Channel}.
+     * 用户自定义事件
      */
     ChannelInboundInvoker fireUserEventTriggered(Object event);
 
     /**
-     * A {@link Channel} received a message.
-     *
-     * This will result in having the {@link ChannelInboundHandler#channelRead(ChannelHandlerContext, Object)}
-     * method  called of the next {@link ChannelInboundHandler} contained in the  {@link ChannelPipeline} of the
-     * {@link Channel}.
+     * 读事件
      */
     ChannelInboundInvoker fireChannelRead(Object msg);
 
     /**
-     * Triggers an {@link ChannelInboundHandler#channelReadComplete(ChannelHandlerContext)}
-     * event to the next {@link ChannelInboundHandler} in the {@link ChannelPipeline}.
+     * 读操作完成通知事件
      */
     ChannelInboundInvoker fireChannelReadComplete();
 
     /**
-     * Triggers an {@link ChannelInboundHandler#channelWritabilityChanged(ChannelHandlerContext)}
-     * event to the next {@link ChannelInboundHandler} in the {@link ChannelPipeline}.
+     * Channel的可写状态变化通知事件
      */
     ChannelInboundInvoker fireChannelWritabilityChanged();
 }

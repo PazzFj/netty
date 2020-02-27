@@ -18,7 +18,7 @@ package io.netty.channel;
 import io.netty.channel.ChannelHandlerMask.Skip;
 
 /**
- * 提供所有方法实现的{@link ChannelInboundHandler}实现的抽象基类
+ * ChannelInboundHandler 接口的实现类，
  */
 public class ChannelInboundHandlerAdapter extends ChannelHandlerAdapter implements ChannelInboundHandler {
 

@@ -49,7 +49,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractNioChannel.class);
 
-    private final SelectableChannel ch;         // ServerSocketChannel 服务通道
+    private final SelectableChannel ch;         // ServerSocketChannel 服务通道 ServerSocketChannelImpl
     protected final int readInterestOp;         // 用于接收操作的操作集位  SelectionKey.OP_ACCEPT
     volatile SelectionKey selectionKey;         // ServerSocketChannel 注册到 Selector 时的 SelectionKey 返回
     boolean readPending;
@@ -176,9 +176,10 @@ public abstract class AbstractNioChannel extends AbstractChannel {
     }
 
     /**
-     * Special {@link Unsafe} sub-type which allows to access the underlying {@link SelectableChannel}
+     * 特殊的{@link Unsafe}子类型, 允许访问底层{@link SelectableChannel}
      */
     public interface NioUnsafe extends Unsafe {
+
         /**
          * Return underlying {@link SelectableChannel}
          */
@@ -198,14 +199,13 @@ public abstract class AbstractNioChannel extends AbstractChannel {
     }
 
     /**
-     * *********************Unsafe 实现类***********************
+     * *********************Unsafe 实现类 start ***********************
      */
     protected abstract class AbstractNioUnsafe extends AbstractUnsafe implements NioUnsafe {
 
         protected final void removeReadOp() {
             SelectionKey key = selectionKey();
-            // Check first if the key is still valid as it may be canceled as part of the deregistration
-            // from the EventLoop
+            // 首先检查该密钥是否仍然有效，因为它可能作为从EventLoop取消注册的一部分被取消
             // See https://github.com/netty/netty/issues/2104
             if (!key.isValid()) {
                 return;
@@ -357,8 +357,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
             return selectionKey.isValid() && (selectionKey.interestOps() & SelectionKey.OP_WRITE) != 0;
         }
     }
-
-    /***********************************************************/
+    /** *********************Unsafe 实现类 end ************************/
 
 
     @Override

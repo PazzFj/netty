@@ -24,91 +24,38 @@ import java.net.SocketAddress;
 public interface ChannelOutboundInvoker {
 
     /**
-     * Request to bind to the given {@link SocketAddress} and notify the {@link ChannelFuture} once the operation
-     * completes, either because the operation was successful or because of an error.
-     * <p>
-     * This will result in having the
-     * {@link ChannelOutboundHandler#bind(ChannelHandlerContext, SocketAddress, ChannelPromise)} method
-     * called of the next {@link ChannelOutboundHandler} contained in the {@link ChannelPipeline} of the
-     * {@link Channel}.
+     * 请求绑定到给定的{@link SocketAddress}
      */
     ChannelFuture bind(SocketAddress localAddress);
 
     /**
-     * Request to connect to the given {@link SocketAddress} and notify the {@link ChannelFuture} once the operation
-     * completes, either because the operation was successful or because of an error.
-     * <p>
-     * If the connection fails because of a connection timeout, the {@link ChannelFuture} will get failed with
-     * a {@link ConnectTimeoutException}. If it fails because of connection refused a {@link ConnectException}
-     * will be used.
-     * <p>
-     * This will result in having the
-     * {@link ChannelOutboundHandler#connect(ChannelHandlerContext, SocketAddress, SocketAddress, ChannelPromise)}
-     * method called of the next {@link ChannelOutboundHandler} contained in the {@link ChannelPipeline} of the
-     * {@link Channel}.
+     * 连接服务端事件
      */
     ChannelFuture connect(SocketAddress remoteAddress);
 
     /**
-     * Request to connect to the given {@link SocketAddress} while bind to the localAddress and notify the
-     * {@link ChannelFuture} once the operation completes, either because the operation was successful or because of
-     * an error.
-     * <p>
-     * This will result in having the
-     * {@link ChannelOutboundHandler#connect(ChannelHandlerContext, SocketAddress, SocketAddress, ChannelPromise)}
-     * method called of the next {@link ChannelOutboundHandler} contained in the {@link ChannelPipeline} of the
-     * {@link Channel}.
+     * 请求连接到给定的{@link SocketAddress}，同时绑定到本地地址，并在操作完成后通知{@link ChannelFuture}，原因可能是操作成功，也可能是错误
      */
     ChannelFuture connect(SocketAddress remoteAddress, SocketAddress localAddress);
 
     /**
-     * Request to disconnect from the remote peer and notify the {@link ChannelFuture} once the operation completes,
-     * either because the operation was successful or because of an error.
-     * <p>
-     * This will result in having the
-     * {@link ChannelOutboundHandler#disconnect(ChannelHandlerContext, ChannelPromise)}
-     * method called of the next {@link ChannelOutboundHandler} contained in the {@link ChannelPipeline} of the
-     * {@link Channel}.
+     * 断开连接事件
      */
     ChannelFuture disconnect();
 
     /**
-     * Request to close the {@link Channel} and notify the {@link ChannelFuture} once the operation completes,
-     * either because the operation was successful or because of
-     * an error.
-     *
-     * After it is closed it is not possible to reuse it again.
-     * <p>
-     * This will result in having the
-     * {@link ChannelOutboundHandler#close(ChannelHandlerContext, ChannelPromise)}
-     * method called of the next {@link ChannelOutboundHandler} contained in the {@link ChannelPipeline} of the
-     * {@link Channel}.
+     * 关闭当前Channel事件
      */
     ChannelFuture close();
 
     /**
-     * Request to deregister from the previous assigned {@link EventExecutor} and notify the
-     * {@link ChannelFuture} once the operation completes, either because the operation was successful or because of
-     * an error.
-     * <p>
-     * This will result in having the
-     * {@link ChannelOutboundHandler#deregister(ChannelHandlerContext, ChannelPromise)}
-     * method called of the next {@link ChannelOutboundHandler} contained in the {@link ChannelPipeline} of the
-     * {@link Channel}.
+     * 请求从之前分配的{@link EventExecutor}取消注册，并在操作完成后通知{@link ChannelFuture}，原因可能是操作成功，也可能是错误
      *
      */
     ChannelFuture deregister();
 
     /**
-     * Request to bind to the given {@link SocketAddress} and notify the {@link ChannelFuture} once the operation
-     * completes, either because the operation was successful or because of an error.
-     *
-     * The given {@link ChannelPromise} will be notified.
-     * <p>
-     * This will result in having the
-     * {@link ChannelOutboundHandler#bind(ChannelHandlerContext, SocketAddress, ChannelPromise)} method
-     * called of the next {@link ChannelOutboundHandler} contained in the {@link ChannelPipeline} of the
-     * {@link Channel}.
+     * 绑定本地地址事件
      */
     ChannelFuture bind(SocketAddress localAddress, ChannelPromise promise);
 
@@ -187,23 +134,12 @@ public interface ChannelOutboundInvoker {
     ChannelFuture deregister(ChannelPromise promise);
 
     /**
-     * Request to Read data from the {@link Channel} into the first inbound buffer, triggers an
-     * {@link ChannelInboundHandler#channelRead(ChannelHandlerContext, Object)} event if data was
-     * read, and triggers a
-     * {@link ChannelInboundHandler#channelReadComplete(ChannelHandlerContext) channelReadComplete} event so the
-     * handler can decide to continue reading.  If there's a pending read operation already, this method does nothing.
-     * <p>
-     * This will result in having the
-     * {@link ChannelOutboundHandler#read(ChannelHandlerContext)}
-     * method called of the next {@link ChannelOutboundHandler} contained in the {@link ChannelPipeline} of the
-     * {@link Channel}.
+     * 读事件
      */
     ChannelOutboundInvoker read();
 
     /**
-     * Request to write a message via this {@link ChannelHandlerContext} through the {@link ChannelPipeline}.
-     * This method will not request to actual flush, so be sure to call {@link #flush()}
-     * once you want to request to flush all pending data to the actual transport.
+     * 发送事件
      */
     ChannelFuture write(Object msg);
 
@@ -215,7 +151,7 @@ public interface ChannelOutboundInvoker {
     ChannelFuture write(Object msg, ChannelPromise promise);
 
     /**
-     * Request to flush all pending messages via this ChannelOutboundInvoker.
+     * 刷新事件
      */
     ChannelOutboundInvoker flush();
 
@@ -254,18 +190,7 @@ public interface ChannelOutboundInvoker {
     ChannelFuture newFailedFuture(Throwable cause);
 
     /**
-     * Return a special ChannelPromise which can be reused for different operations.
-     * <p>
-     * It's only supported to use
-     * it for {@link ChannelOutboundInvoker#write(Object, ChannelPromise)}.
-     * </p>
-     * <p>
-     * Be aware that the returned {@link ChannelPromise} will not support most operations and should only be used
-     * if you want to save an object allocation for every write operation. You will not be able to detect if the
-     * operation  was complete, only if it failed as the implementation will call
-     * {@link ChannelPipeline#fireExceptionCaught(Throwable)} in this case.
-     * </p>
-     * <strong>Be aware this is an expert feature and should be used with care!</strong>
+     * 返回一个特殊的ChannelPromise，可以用于不同的操作
      */
     ChannelPromise voidPromise();
 }

@@ -32,7 +32,7 @@ public interface ChannelHandlerContext extends AttributeMap, ChannelInboundInvok
     /**
      * 返回通道
      */
-    Channel channel();
+    Channel channel();  // 核心管道
 
     /**
      * 返回用于执行任意任务的{@link EventExecutor}
@@ -49,13 +49,13 @@ public interface ChannelHandlerContext extends AttributeMap, ChannelInboundInvok
     boolean isRemoved();
 
     @Override
-    ChannelHandlerContext fireChannelRegistered();
+    ChannelHandlerContext fireChannelRegistered();  // Channel注册事件
 
     @Override
     ChannelHandlerContext fireChannelUnregistered();
 
     @Override
-    ChannelHandlerContext fireChannelActive();
+    ChannelHandlerContext fireChannelActive();  // Tcp链路建立成功，Channel激活事件
 
     @Override
     ChannelHandlerContext fireChannelInactive();
@@ -67,7 +67,7 @@ public interface ChannelHandlerContext extends AttributeMap, ChannelInboundInvok
     ChannelHandlerContext fireUserEventTriggered(Object evt);
 
     @Override
-    ChannelHandlerContext fireChannelRead(Object msg);
+    ChannelHandlerContext fireChannelRead(Object msg);  // 读事件
 
     @Override
     ChannelHandlerContext fireChannelReadComplete();

@@ -15,25 +15,20 @@
  */
 package io.netty.channel;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
 
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
-
 /**
- * ChannelPipeline 引导通道
+ * ChannelPipeline 通道链
  */
 public interface ChannelPipeline
         extends ChannelInboundInvoker, ChannelOutboundInvoker, Iterable<Entry<String, ChannelHandler>> {
 
+    //添加ChannelHandler在ChannelPipeline的第一个位置
     ChannelPipeline addFirst(String name, ChannelHandler handler);
 
     ChannelPipeline addFirst(EventExecutorGroup group, String name, ChannelHandler handler);
@@ -42,10 +37,12 @@ public interface ChannelPipeline
 
     ChannelPipeline addLast(EventExecutorGroup group, String name, ChannelHandler handler);
 
+    //在ChannelPipeline中指定的ChannelHandler名称之前添加ChannelHandler
     ChannelPipeline addBefore(String baseName, String name, ChannelHandler handler);
 
     ChannelPipeline addBefore(EventExecutorGroup group, String baseName, String name, ChannelHandler handler);
 
+    //在ChannelPipeline中指定的ChannelHandler名称之后添加ChannelHandler
     ChannelPipeline addAfter(String baseName, String name, ChannelHandler handler);
 
     ChannelPipeline addAfter(EventExecutorGroup group, String baseName, String name, ChannelHandler handler);
@@ -54,10 +51,12 @@ public interface ChannelPipeline
 
     ChannelPipeline addFirst(EventExecutorGroup group, ChannelHandler... handlers);
 
+    //在ChannelPipeline的末尾添加ChannelHandler
     ChannelPipeline addLast(ChannelHandler... handlers);
 
     ChannelPipeline addLast(EventExecutorGroup group, ChannelHandler... handlers);
 
+    //删除ChannelPipeline中指定的ChannelHandler
     ChannelPipeline remove(ChannelHandler handler);
 
     ChannelHandler remove(String name);
@@ -68,6 +67,7 @@ public interface ChannelPipeline
 
     ChannelHandler removeLast();
 
+    //替换ChannelPipeline中指定的ChannelHandler
     ChannelPipeline replace(ChannelHandler oldHandler, String newName, ChannelHandler newHandler);
 
     ChannelHandler replace(String oldName, String newName, ChannelHandler newHandler);

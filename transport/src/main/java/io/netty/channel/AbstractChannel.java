@@ -44,7 +44,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractChannel.class);
 
-    private final Channel parent;
+    private final Channel parent;   // Initialize null
     private final ChannelId id;
     private final Unsafe unsafe;    // NioMessageUnsafe
     private final DefaultChannelPipeline pipeline;  // 默认Channel传递途径
@@ -54,7 +54,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
     private volatile SocketAddress localAddress;
     private volatile SocketAddress remoteAddress;
     private volatile EventLoop eventLoop;   //当前管道所在的 NioEventLoop 线程
-    private volatile boolean registered;    //注册标识
+    private volatile boolean registered;    //注册标识 默认为false， 只有当注册之后才为true
     private boolean closeInitiated;
     private Throwable initialCloseCause;
 
@@ -65,8 +65,8 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
     protected AbstractChannel(Channel parent) {
         this.parent = parent;
         id = newId();
-        unsafe = newUnsafe();   // 创建 NioMessageUnsafe
-        pipeline = newChannelPipeline();    // 创建 ChannelPipeline
+        unsafe = newUnsafe();   // AbstractChannel 构造器中创建 Unsafe -> NioMessageUnsafe
+        pipeline = newChannelPipeline();    // 构造器中创建 DefaultChannelPipeline
     }
 
     protected AbstractChannel(Channel parent, ChannelId id) {
@@ -477,7 +477,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                 // 设置ServerSocketChannel 注册选择器
                 doRegister();   // AbstractNioChannel#doRegister(): 使用ServerSocketChannel 注册到 Selector 得到 SelectionKey
                 // 设置标识为已注册
-                neverRegistered = false;
+                neverRegistered = false;    // 绝不
                 registered = true;
 
                 // Ensure we call handlerAdded(...) before we actually notify the promise. This is needed as the
@@ -492,8 +492,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                     if (firstRegistration) {
                         pipeline.fireChannelActive();
                     } else if (config().isAutoRead()) {
-                        // This channel was registered before and autoRead() is set. This means we need to begin read
-                        // again so that we process inbound data.
+                        // 这个通道之前已经注册，并且设置了autoRead()。这意味着我们需要再次开始读取，以便处理入站数据
                         //
                         // See https://github.com/netty/netty/issues/4805
                         beginRead();
